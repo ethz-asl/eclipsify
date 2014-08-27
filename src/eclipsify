@@ -23,10 +23,23 @@ options = parser.parse_args()
 
 package     = options.package[0]
 
+result = find_in_workspaces(project=package)
+if len(result) == 0:
+    print 'No package named "{0}".'.format(package);
+    print 'Common sources of this error:'
+    print ' - There is no package named {0}'.format(package)
+    print ' - You have not run "catkin build {0}" yet'.format(package) 
+    exit(2);
 
-libexec, share, src = find_in_workspaces(project=package)
+if len(result) < 2:
+    print 'unexpected return value from find_in_workspaces()'
+    print result
+    print 'This is a bug. Please report to the developers'
 
-build = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(libexec))),'build',package);
+src = result[-1]
+share = result[-2]
+
+build = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(share))),'build',package);
 
 from eclipsify_lib.eclipsify_gen_project import main
 
