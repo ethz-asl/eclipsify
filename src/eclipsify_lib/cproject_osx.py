@@ -18,7 +18,7 @@ cprojectTemplate=R'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.1074977965" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.1749184169" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.1726019626" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder arguments="make" buildPath="{1}" command="{1}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.390563205" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
+							<builder arguments="make VERBOSE=1" buildPath="{1}" command="{1}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.390563205" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.108155396" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.985489660" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1629794530" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
