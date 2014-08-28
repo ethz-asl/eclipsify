@@ -5,6 +5,16 @@ import sys
 import eclipsify_lib
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
+try:
+    from termcolor import colored
+except:
+    print("Unable to import termcolor.")
+    print("Try:")
+    print("sudo pip install termcolor")
+    def colored(X,Y):
+        return X
+
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -61,3 +71,4 @@ def main(argv=None):
     print("-- Creating .settings/language.settings.xml")
     with open(os.path.join(eclipse_dir,'.settings', 'language_settings.xml'), 'w') as outfile:
         print(language_settings.get(), file=outfile)
+    print(colored('-- Successfully created the project {0} in directory {1}'.format(package, eclipse_dir), 'green'))

@@ -7,6 +7,14 @@ import errno
 import sys
 import eclipsify_lib as eclipsify
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
+import psutil
+import subprocess
+
+def check_ps_cmd(script_name):
+    for proc in psutil.process_iter():
+        if proc == script_name:
+            return True
+    return False
 
 usage="""
 This utility creates a new eclipse project. It assumes the package is
@@ -18,6 +26,7 @@ The project files will go to devel/share/project-name/eclipse"""
 parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
 
 parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
+parser.add_argument('-w', dest='workspace', help='The full path of the eclipse workspace that this package should be added to.')
 
 options = parser.parse_args()
 
@@ -25,14 +34,14 @@ package     = options.package[0]
 
 result = find_in_workspaces(project=package)
 if len(result) == 0:
-    print 'No package named "{0}".'.format(package);
+    print eclipsify.colored('No package named "{0}".'.format(package),'red');
     print 'Common sources of this error:'
     print ' - There is no package named {0}'.format(package)
     print ' - You have not run "catkin build {0}" yet'.format(package) 
     exit(2);
 
 if len(result) < 2:
-    print 'unexpected return value from find_in_workspaces()'
+    print eclipsify.colored('unexpected return value from find_in_workspaces()','red')
     print result
     print 'This is a bug. Please report to the developers'
 
@@ -43,4 +52,24 @@ build = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(share))),'b
 
 from eclipsify_lib.eclipsify_gen_project import main
 
-main(argv=[package, src, os.path.join(share,'eclipse'), build]);
+eclipse_project=os.path.join(share,'eclipse')
+main(argv=[package, src, eclipse_project, build]);
+
+# Add the package to a workspace if necessary.
+if options.workspace:
+    workspace = os.path.abspath(options.workspace)
+    print "-- Trying to add the package to the eclipse workspace at: {0}".format(workspace)
+    print "-- Checking if eclipse is running"
+    if check_ps_cmd('eclipse'):
+        print eclipsify.colored('-- ERROR: Unable to add a package to a workspace if eclipse is running','red')
+        exit(2)
+    if not os.path.exists(workspace):
+        print eclipsify.colored("-- ERROR: The workspace path does not exist",'red')
+        exit(2)
+    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project)
+    print cmd
+    status = subprocess.call(cmd, shell=True)
+    if status != 0:
+        print eclipsify.colored('-- ERROR Eclipse returned an error. This may not have worked.','red');
+        exit(2)
+    print eclipsify.colored('-- Successfully added {0} to the workspace at {1}'.format(package, workspace), 'green')
