@@ -57,6 +57,10 @@ def main(argv=None):
         import eclipsify_lib.cproject_osx as cproject
         import eclipsify_lib.project_osx as project
         import eclipsify_lib.language_settings_osx as language_settings
+    elif sys.platform == 'linux2':
+        import eclipsify_lib.cproject_linux as cproject
+        import eclipsify_lib.project_linux as project
+        import eclipsify_lib.language_settings_linux as language_settings
     else:
         raise RuntimeError('Someone has to fill in these templates');
 
