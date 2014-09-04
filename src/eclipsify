@@ -19,14 +19,17 @@ def check_ps_cmd(script_name):
 usage="""
 This utility creates a new eclipse project. It assumes the package is
 in a workspace with the default names for the devel/build/src spaces.
-If your workspace is different, try eclipsify-gen-project.
+If your workspace is different, try eclipsify-gen-project. If the
+command is called with the optional -w option, pointing to an existing
+eclipse workspace, the project is added to the eclipse workspace. You 
+must not have this workspace open in eclipse when you use -w.
 
 The project files will go to devel/share/project-name/eclipse"""
 
 parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
 
 parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
-parser.add_argument('-w', dest='workspace', help='The full path of the eclipse workspace that this package should be added to.')
+parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
 
 options = parser.parse_args()
 
@@ -56,8 +59,8 @@ eclipse_project=os.path.join(share,'eclipse')
 main(argv=[package, src, eclipse_project, build]);
 
 # Add the package to a workspace if necessary.
-if options.workspace:
-    workspace = os.path.abspath(options.workspace)
+if options.eclipse_workspace:
+    workspace = os.path.abspath(options.eclipse_workspace)
     print "-- Trying to add the package to the eclipse workspace at: {0}".format(workspace)
     print "-- Checking if eclipse is running"
     if check_ps_cmd('eclipse'):
