@@ -6,7 +6,10 @@ usage: eclipsify [-h] [-w WORKSPACE] package
 
 This utility creates a new eclipse project. It assumes the package is
 in a workspace with the default names for the devel/build/src spaces.
-If your workspace is different, try eclipsify-gen-project.
+If your workspace is different, try eclipsify-gen-project. If the
+command is called with the optional -w option, pointing to an existing
+eclipse workspace, the project is added to the eclipse workspace. You 
+not have this workspace open in eclipse when you use -w.
 
 The project files will go to devel/share/project-name/eclipse
 
