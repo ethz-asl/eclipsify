@@ -1,5 +1,7 @@
 # Eclipsify
-Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works for OSX.
+Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works for OSX and Ubuntu 14.04.
+
+For C++11 support in Ubuntu 14.04 & Eclipse Luna, go to Window->Preferences->C/C++->Settings->Discovery->"CDT GCC Built-in Compiler Settings" and add `-std=c++11` to the flags.
 
 ```
 usage: eclipsify [-h] [-w WORKSPACE] package
