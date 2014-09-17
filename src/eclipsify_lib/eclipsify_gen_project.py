@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
-import errno
 import sys
+import tools
 import eclipsify_lib
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
@@ -15,14 +15,6 @@ except:
         return X
 
 
-def mkdir_p(path):
-    try:
-        os.makedirs(path)
-    except OSError as exc: # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else: 
-            raise
 
 def main(argv=None):
     if argv is None:
@@ -53,7 +45,7 @@ def main(argv=None):
     print("----------")
     print("-- Creating directories")
     print("-- {0}".format(eclipse_dir))
-    mkdir_p( os.path.join( eclipse_dir, '.settings' ) )
+    tools.mkdir_p( os.path.join( eclipse_dir, '.settings' ) )
 
     if platform == 'darwin':
         import eclipsify_lib.cproject_osx as cproject
