@@ -1,6 +1,6 @@
-projectTemplate=R'''<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>{0}</name>
+	<name>{name}</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -26,13 +26,9 @@ projectTemplate=R'''<?xml version="1.0" encoding="UTF-8"?>
 	</natures>
 	<linkedResources>
 		<link>
-			<name>{0}_src</name>
+			<name>{name}_src</name>
 			<type>2</type>
-			<location>{1}</location>
+			<location>{srcDir}</location>
 		</link>
 	</linkedResources>
 </projectDescription>
-'''
-
-def get(packageName, fullPathToSource):
-    return projectTemplate.format(packageName, fullPathToSource)

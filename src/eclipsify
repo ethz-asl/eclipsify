@@ -3,7 +3,6 @@
 from catkin.find_in_workspaces import find_in_workspaces
 
 import os
-import errno
 import sys
 import eclipsify_lib as eclipsify
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
