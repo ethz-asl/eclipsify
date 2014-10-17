@@ -3,11 +3,10 @@
 from catkin.find_in_workspaces import find_in_workspaces
 
 import os
-import errno
 import sys
-import eclipsify_lib as eclipsify
+from eclipsify_lib.tools import colored
+ 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
-import psutil
 import subprocess
 
 def check_ps_cmd(script_name):
@@ -33,20 +32,26 @@ parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclips
 
 options = parser.parse_args()
 
+
+if options.eclipse_workspace:
+    import psutil
+
 package     = options.package[0]
 
 result = find_in_workspaces(project=package)
 if len(result) == 0:
-    print eclipsify.colored('No package named "{0}".'.format(package),'red');
+    print colored('No package named "{0}".'.format(package),'red');
     print 'Common sources of this error:'
     print ' - There is no package named {0}'.format(package)
     print ' - You have not run "catkin build {0}" yet'.format(package) 
     exit(2);
 
 if len(result) < 2:
-    print eclipsify.colored('unexpected return value from find_in_workspaces()','red')
+    print colored('unexpected return value from find_in_workspaces()','red')
     print result
-    print 'This is a bug. Please report to the developers'
+    print ('Was catkin build {0} successful once? If not try to make it run successful first. ' 
+           'If yes this is a bug. Please report to the developers')
+    sys.exit(-1)
 
 src = result[-1]
 share = result[-2]
@@ -64,15 +69,15 @@ if options.eclipse_workspace:
     print "-- Trying to add the package to the eclipse workspace at: {0}".format(workspace)
     print "-- Checking if eclipse is running"
     if check_ps_cmd('eclipse'):
-        print eclipsify.colored('-- ERROR: Unable to add a package to a workspace if eclipse is running','red')
+        print colored('-- ERROR: Unable to add a package to a workspace if eclipse is running','red')
         exit(2)
     if not os.path.exists(workspace):
-        print eclipsify.colored("-- ERROR: The workspace path does not exist",'red')
+        print colored("-- ERROR: The workspace path does not exist",'red')
         exit(2)
     cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project)
     print cmd
     status = subprocess.call(cmd, shell=True)
     if status != 0:
-        print eclipsify.colored('-- ERROR Eclipse returned an error. This may not have worked.','red');
+        print colored('-- ERROR Eclipse returned an error. This may not have worked.','red');
         exit(2)
-    print eclipsify.colored('-- Successfully added {0} to the workspace at {1}'.format(package, workspace), 'green')
+    print colored('-- Successfully added {0} to the workspace at {1}'.format(package, workspace), 'green')
