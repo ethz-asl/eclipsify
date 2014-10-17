@@ -1,7 +1,6 @@
 from __future__ import print_function
 import os
 import tools
-import collections
 import sys
 
 try:
@@ -19,12 +18,12 @@ else:
     string_types = basestring
 
 class ProjectFile:
-    def __init__(self, name, dir = None):
+    def __init__(self, name, dirPath = None):
         self._name = name;
-        if isinstance(dir, string_types):
-            self._dir = dir
+        if isinstance(dirPath, string_types):
+            self._dir = dirPath
         else:
-            self._dir = os.path.join(*dir) if dir else ''
+            self._dir = os.path.join(*dirPath) if dirPath else ''
     
     def getFullDirPath(self, baseDir):
         return os.path.join(baseDir, self._dir)
@@ -36,17 +35,22 @@ class ProjectFile:
         return self.getFullPath();
 
 class ProjectFilesGenerator:
-    def __init__(self, name, srcDir, buildDir) :
+    def __init__(self, verbose, name, srcDir, buildDir) :
+        self._verbose = verbose
         self._name = name
         self._srcDir = srcDir
         self._buildDir = buildDir
 
+    def verbose(self, text):
+        if self._verbose : print (colored(text, 'yellow'))
+        
     def generate(self, searchDirs, projectFiles, outputDir):
         errors = 0
         print("-- Generating project %s in directory '%s'" % (self._name, outputDir))
+        self.verbose("--- Using template search path '%s'" % ( ":".join(searchDirs)))
         self.createDir(outputDir, '--')
         for projectFile in projectFiles :
-            print("--- Creating %s" % projectFile)
+            print("--- Creating %s" % (projectFile))
             self.createDir(projectFile.getFullDirPath(outputDir), '---')
             try:
                 content = self.calcContent(searchDirs, projectFile.getFullPath());
@@ -61,14 +65,15 @@ class ProjectFilesGenerator:
         else:
             print(colored("-> Failed: Some errors occurred while created the project {0} in directory '{1}'".format(self._name, outputDir), 'red'))
 
-    def createDir(self, dir, prefix):
-        if dir and not os.path.isdir(dir) :
-            print(prefix + "- Creating directory '{0}'".format(dir))
-            tools.mkdir_p(dir)
+    def createDir(self, dirPath, prefix):
+        if dir and not os.path.isdir(dirPath) :
+            self.verbose(prefix + "- Creating directory '{0}'".format(dirPath))
+            tools.mkdir_p(dirPath)
             print (colored(prefix + "> OK", 'green'))
 
-    def calcContent(self, searchDirs, file):
-        file = tools.findInSearchPath(searchDirs, file)
-        with open(file, 'r') as content_file:
+    def calcContent(self, searchDirs, fileName):
+        filePath = tools.findInSearchPath(searchDirs, fileName)
+        self.verbose("---- Instantiating template file '%s'" % filePath);
+        with open(filePath, 'r') as content_file:
             content = content_file.read()
             return content.format(name = self._name, buildDir = self._buildDir, srcDir = self._srcDir)

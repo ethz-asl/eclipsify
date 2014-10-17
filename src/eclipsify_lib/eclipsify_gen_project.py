@@ -15,6 +15,8 @@ def main(argv=None):
 
     parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
 
+    parser.add_argument('-v', '--verbose', action='count', help="How much to be verbose", default=0)
+    parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated", default="")
     parser.add_argument("package", nargs=1, help="Package to be created.")
     parser.add_argument("srcDir", nargs=1, help="The source directory.")
     parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
@@ -35,9 +37,14 @@ def main(argv=None):
     
     templatesDir = os.path.join(libDir, 'templates');
     platformTemplateDir = os.path.join(templatesDir, platform);
-    templateSearchPaths = [platformTemplateDir, templatesDir];
+    userTemplatesDir = os.path.expanduser("~/.eclipsify/templates");
+    userPlatformTemplatesDir = os.path.join(userTemplatesDir, platform);
+    
+    templateSearchPaths = options.templates.split(':')
+    templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+    
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
     
-    projectFilesGenerator = generator.ProjectFilesGenerator(options.package[0], options.srcDir[0], options.buildDir[0])
+    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, options.package[0], options.srcDir[0], options.buildDir[0])
     projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir);
