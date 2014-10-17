@@ -49,7 +49,8 @@ if len(result) == 0:
 if len(result) < 2:
     print colored('unexpected return value from find_in_workspaces()','red')
     print result
-    print 'Was catkin build {0} successful once? If not try to make it run successful first. If yes this is a bug. Please report to the developers'
+    print ('Was catkin build {0} successful once? If not try to make it run successful first. ' 
+           'If yes this is a bug. Please report to the developers')
     sys.exit(-1)
 
 src = result[-1]

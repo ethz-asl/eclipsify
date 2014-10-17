@@ -15,8 +15,8 @@ def main(argv=None):
 
     parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
 
-    parser.add_argument('-v', '--verbose', action='count', help="How much to be verbose", default=0)
-    parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated", default="")
+    parser.add_argument('-v', '--verbose', action='count', help="Verbosity level.", default=0)
+    parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
     parser.add_argument("package", nargs=1, help="Package to be created.")
     parser.add_argument("srcDir", nargs=1, help="The source directory.")
     parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
