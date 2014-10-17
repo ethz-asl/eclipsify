@@ -3,14 +3,7 @@ import os
 import tools
 import sys
 
-try:
-    from termcolor import colored
-except:
-    print("Unable to import termcolor.")
-    print("Try:")
-    print("sudo pip install termcolor")
-    def colored(X,Y):
-        return X
+from tools import colored
 
 if sys.version_info[0] == 3:
     string_types = str

@@ -2,6 +2,15 @@ import errno
 import os
 import sys
 
+try:
+    from termcolor import colored
+except:
+    print("Unable to import termcolor.")
+    print("Try:")
+    print("sudo pip install termcolor")
+    def colored(X,Y):
+        return X
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -12,19 +21,19 @@ def mkdir_p(path):
             raise
 
 class FindError(Exception):
-    def __init__(self, file):
-        self.file = file
+    def __init__(self, fileName):
+        self.file = fileName
         
     def getFile(self):
-        return self.file
+        return self.fileName
 
 
-def findInSearchPath(pathList, file):
+def findInSearchPath(pathList, fileName):
     for dirname in pathList:
-        candidate = os.path.join(dirname, file)
+        candidate = os.path.join(dirname, fileName)
         if os.path.isfile(candidate):
             return candidate
-    raise FindError(file)
+    raise FindError(fileName)
 
 def addModuleSaearchDirsAndCleanFromDanglingPycFiles(directories):
     import glob
