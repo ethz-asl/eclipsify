@@ -47,7 +47,7 @@ share = os.path.join(catkin_develspace, 'share', package)
 if not os.path.exists(share):
     os.mkdir( share )
 
-build = os.path.join(catkin_workspace, 'build')
+build = os.path.join(catkin_workspace, 'build', package)
 
 from eclipsify_lib.eclipsify_gen_project import main
 
