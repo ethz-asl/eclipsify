@@ -1,7 +1,18 @@
 #!/usr/bin/env python
 
-from catkin.find_in_workspaces import find_in_workspaces
-import catkin
+import catkin.workspace
+
+try:
+    import catkin_pkg.packages
+    foundCatkinPkg = True
+except:
+    foundCatkinPkg = False
+    print("Unable to import catkin_pkg.")
+    print("Without it eclipsify won't find packages in subfolders of the 'src' folder or in other than the top level workspace.")
+    print("If this is needed try:")
+    print("  sudo apt-get install catkin_pkg")
+    print("or use the eclipsify-gen-project cli tool.")
+
 import os
 import sys
 from eclipsify_lib.tools import colored
@@ -34,25 +45,63 @@ options = parser.parse_args()
 if options.eclipse_workspace:
     import psutil
 
-package     = options.package[0]
+package = options.package[0]
 
 catkin_workspaces = catkin.workspace.get_workspaces()
 if len(catkin_workspaces) == 0:
     print colored('No workspaces! Please source the setup.bash file of some workspace before running this script.'.format(package),'red');
-catkin_develspace = catkin_workspaces[0]
-catkin_workspace = os.path.dirname(catkin_develspace)
+    exit(-1)
 
-src = os.path.join(catkin_workspace, 'src', package)
-share = os.path.join(catkin_develspace, 'share', package)
+
+class Workspace :
+    def __init__(self, develSpace):
+        self._develspace = develSpace
+        self._base = os.path.dirname(develSpace)
+        
+    def getPath(self):
+        return _base;
+    def getDevelSpace(self):
+        return self._develspace;
+    def getBuildSpace(self):
+        return os.path.join(self._base, 'build');
+    def getSourceFolder(self):
+        return os.path.join(self._base, 'src');
+
+src = None
+workspace = None
+
+def isPackageSrc(spath):
+    return os.path.exists(os.path.join(spath, "package.xml"))
+
+if foundCatkinPkg:
+    for ws in catkin_workspaces:
+        for s in catkin.workspace.get_source_paths(ws):
+            if isPackageSrc(s): 
+                p = catkin_pkg.packages.parse_package(s);
+                if(p.name == package):
+                    if not src:
+                        workspace = Workspace(ws)
+                        src = s
+                        print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
+                    else:
+                        print colored('-- Package ambigous also in workspace {1} with source {2}'.format(ws, s), 'red')
+else:
+    workspace = Workspace(catkin_workspaces[0])
+    src = os.path.join(workspace.getSourceFolder(), package)
+
+if not src or not isPackageSrc(src) :
+    print colored('-- Could not find package {0}. Aborting.'.format(package), 'red')
+    exit(-2)
+
+share = os.path.join(workspace.getDevelSpace(), 'share', package)
 if not os.path.exists(share):
     os.mkdir( share )
 
-build = os.path.join(catkin_workspace, 'build', package)
 
 from eclipsify_lib.eclipsify_gen_project import main
 
 eclipse_project=os.path.join(share,'eclipse')
-main(argv=[package, src, eclipse_project, build]);
+main(argv=[package, src, eclipse_project, workspace.getBuildSpace()]);
 
 # Add the package to a workspace if necessary.
 if options.eclipse_workspace:
