@@ -101,7 +101,7 @@ if not os.path.exists(share):
 from eclipsify_lib.eclipsify_gen_project import main
 
 eclipse_project=os.path.join(share,'eclipse')
-main(argv=[package, src, eclipse_project, workspace.getBuildSpace()]);
+main(argv=[package, src, eclipse_project, os.path.join(workspace.getBuildSpace(), package)]);
 
 # Add the package to a workspace if necessary.
 if options.eclipse_workspace:

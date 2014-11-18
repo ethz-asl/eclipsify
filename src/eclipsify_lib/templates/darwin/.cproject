@@ -63,7 +63,7 @@
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.2127756105." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.49520016" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.394020843" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder arguments="make run_tests" buildPath="{buildDir}" command="{buildDir}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.1973106851" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
+							<builder arguments="make run_tests" buildPath="{buildDir}" command="{buildDir}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.1973106851" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base" incrementalBuildTarget="tests"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1655895046" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1992604494" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1346160487" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
