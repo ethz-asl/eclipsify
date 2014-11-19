@@ -82,7 +82,6 @@ if foundCatkinPkg:
         for s in catkin.workspace.get_source_paths(ws):
             if isPackageSrc(s): 
                 p = catkin_pkg.packages.parse_package(s);
-                print "Testing {0} == {1}".format(p.name, package)
                 if(p.name == package):
                     if not src:
                         workspace = Workspace(ws)
