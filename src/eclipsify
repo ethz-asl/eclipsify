@@ -73,11 +73,16 @@ workspace = None
 def isPackageSrc(spath):
     return os.path.exists(os.path.join(spath, "package.xml"))
 
+# Initialize with a good guess. This helps find 
+# pure cmake packages that are not found by the method below.
+workspace = Workspace(catkin_workspaces[0])
+src = os.path.join(workspace.getSourceFolder(), package)
 if foundCatkinPkg:
     for ws in catkin_workspaces:
         for s in catkin.workspace.get_source_paths(ws):
             if isPackageSrc(s): 
                 p = catkin_pkg.packages.parse_package(s);
+                print "Testing {0} == {1}".format(p.name, package)
                 if(p.name == package):
                     if not src:
                         workspace = Workspace(ws)
@@ -85,9 +90,8 @@ if foundCatkinPkg:
                         print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
                     else:
                         print colored('-- Package ambigous also in workspace {1} with source {2}'.format(ws, s), 'red')
-else:
-    workspace = Workspace(catkin_workspaces[0])
-    src = os.path.join(workspace.getSourceFolder(), package)
+
+
 
 if not src or not isPackageSrc(src) :
     print colored('-- Could not find package {0}. Aborting.'.format(package), 'red')
