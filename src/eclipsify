@@ -78,17 +78,19 @@ def isPackageSrc(spath):
 workspace = Workspace(catkin_workspaces[0])
 src = os.path.join(workspace.getSourceFolder(), package)
 if foundCatkinPkg:
+    cnt = 0
     for ws in catkin_workspaces:
         for s in catkin.workspace.get_source_paths(ws):
             if isPackageSrc(s): 
                 p = catkin_pkg.packages.parse_package(s);
                 if(p.name == package):
-                    if not src:
+                    if cnt==0:
                         workspace = Workspace(ws)
                         src = s
                         print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
                     else:
-                        print colored('-- Package ambigous also in workspace {1} with source {2}'.format(ws, s), 'red')
+                        print colored('-- Package ambigous also in workspace {0} with source {1}'.format(ws, s), 'red')
+		    cnt+=1
 
 
 
