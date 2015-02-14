@@ -108,7 +108,8 @@ print
 
 share = os.path.join(workspace.getDevelSpace(), 'share', package)
 if not os.path.exists(share):
-    os.mkdir( share )
+    import eclipsify_lib.tools
+    eclipsify_lib.tools.mkdir_p( share )
 
 
 from eclipsify_lib.eclipsify_gen_project import main
