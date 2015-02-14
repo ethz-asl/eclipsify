@@ -47,11 +47,16 @@ if options.eclipse_workspace:
 
 package = options.package[0]
 
+
+print "-- Searching workspaces:"
 catkin_workspaces = catkin.workspace.get_workspaces()
 if len(catkin_workspaces) == 0:
     print colored('No workspaces! Please source the setup.bash file of some workspace before running this script.'.format(package),'red');
     exit(-1)
 
+print colored("--> Found %s" % (", ".join(catkin_workspaces)), 'green')
+
+print "-- Searching for %s:" % (package);
 
 class Workspace :
     def __init__(self, develSpace):
@@ -97,6 +102,9 @@ if foundCatkinPkg:
 if not src or not isPackageSrc(src) :
     print colored('-- Could not find package {0}. Aborting.'.format(package), 'red')
     exit(-2)
+    
+print colored('--> Found {0}'.format(src), 'green')
+print
 
 share = os.path.join(workspace.getDevelSpace(), 'share', package)
 if not os.path.exists(share):
