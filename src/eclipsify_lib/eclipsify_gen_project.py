@@ -42,8 +42,13 @@ def main(options = None):
     userTemplatesDir = os.path.expanduser("~/.eclipsify/templates");
     userPlatformTemplatesDir = os.path.join(userTemplatesDir, platform);
     
+    extendWithDefaultTemplatePaths = True
+    if options.templates.startswith('='):
+        extendWithDefaultTemplatePaths = False
+        options.templates = options.templates[1:]
     templateSearchPaths = options.templates.split(':')
-    templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+    if extendWithDefaultTemplatePaths:
+      templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
     
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
