@@ -29,8 +29,9 @@ def main(options = None):
 
     platform = options.platform
     outputDir = options.outDir[0]
+    package = options.package[0]
     
-    print("eclipsify!")
+    print("eclipsify package %s for platform %s" % (package, platform))
     print("----------")
 
     libDir = os.path.dirname(__file__);
@@ -47,5 +48,5 @@ def main(options = None):
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
     
-    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, options.package[0], options.srcDir[0], options.buildDir[0])
+    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0])
     projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir);
