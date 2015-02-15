@@ -9,6 +9,7 @@ class EclipsifyAcceptance(unittest.TestCase):
     def _testGeneratorGeneratesSame(self, platform, projects = ['test_project_1'], testWorkspace = 'testWs/devel'):
         for project in projects:
             outDir = 'expected/%s/%s/%s' % (testWorkspace, platform, project)
+            subprocess.call(['rm', '-rf', outDir])
             subprocess.call([sys.executable, 
                              '../src/eclipsify', '-v', 
                              '-W', testWorkspace, 
@@ -17,7 +18,7 @@ class EclipsifyAcceptance(unittest.TestCase):
                              '-T', '=../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform, 
                              project])
             #TODO write eclipsify output also to file and make it join the expected output! 
-            pipe = os.popen('git diff '+ outDir)
+            pipe = os.popen('git diff '+ outDir + ' 2>&1')
             c = 0
             for l in pipe:
                 print l.strip()
