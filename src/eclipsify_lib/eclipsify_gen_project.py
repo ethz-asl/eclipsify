@@ -5,26 +5,27 @@ import tools
 import generator as generator;
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-def main(argv=None):
-    if argv is None:
-        argv=sys.argv
-
-    usage="""
-
-    This utility creates a new eclipse project."""
-
-    parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
-
+def addCommonArguments(parser):
     parser.add_argument('-v', '--verbose', action='count', help="Verbosity level.", default=0)
     parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
-    parser.add_argument("package", nargs=1, help="Package to be created.")
-    parser.add_argument("srcDir", nargs=1, help="The source directory.")
-    parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
-    parser.add_argument("buildDir", nargs=1, help="This project's build directory.")
-    #parser.add_argument("binDir", nargs=1, help="This project's bin directory.")
     parser.add_argument("--platform", help="Platform (defaults to sys.platform).", default=sys.platform)
+    parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
-    options = parser.parse_args(argv)
+def main(options = None):
+    if not options:
+        usage="""
+    
+        This utility creates a new eclipse project."""
+    
+        parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+        addCommonArguments(parser)
+        
+        parser.add_argument("srcDir", nargs=1, help="The source directory.")
+        parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
+        parser.add_argument("buildDir", nargs=1, help="This project's build directory.")
+        #parser.add_argument("binDir", nargs=1, help="This project's bin directory.")
+    
+        options = parser.parse_args(sys.argv)
 
     platform = options.platform
     outputDir = options.outDir[0]

@@ -16,7 +16,8 @@ except:
 import os
 import sys
 from eclipsify_lib.tools import colored
- 
+from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
+
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import subprocess
 
@@ -37,8 +38,8 @@ must not have this workspace open in eclipse when you use -w.
 The project files will go to devel/share/project-name/eclipse"""
 
 parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+addCommonArguments(parser)
 
-parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
@@ -120,10 +121,11 @@ if not os.path.exists(share):
     eclipsify_lib.tools.mkdir_p( share )
 
 
-from eclipsify_lib.eclipsify_gen_project import main
-
 eclipse_project_output_dir=os.path.join(share,'eclipse')
-main(argv=[package, src, eclipse_project_output_dir, os.path.join(workspace.getBuildSpace(), package)]);
+options.srcDir = (src,)
+options.outDir = (eclipse_project_output_dir,)
+options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
+main(options);
 
 # Add the package to a workspace if necessary.
 if options.eclipse_workspace:
