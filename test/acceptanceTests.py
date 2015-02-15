@@ -14,7 +14,7 @@ class EclipsifyAcceptance(unittest.TestCase):
                              '-W', testWorkspace, 
                              '-O', outDir, 
                              '--platform', platform, 
-                             '-T', '../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform, 
+                             '-T', '=../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform, 
                              project])
             #TODO write eclipsify output also to file and make it join the expected output! 
             pipe = os.popen('git diff '+ outDir)
