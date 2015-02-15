@@ -41,6 +41,7 @@ parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpForm
 addCommonArguments(parser)
 
 parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
+parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
 options = parser.parse_args()
@@ -115,13 +116,11 @@ if not src or not isPackageSrc(src) :
 print colored('--> Found {0}'.format(src), 'green')
 print
 
-share = os.path.join(workspace.getDevelSpace(), 'share', package)
-if not os.path.exists(share):
+eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package).replace('/', os.path.sep)
+if not os.path.exists(eclipse_project_output_dir):
     import eclipsify_lib.tools
-    eclipsify_lib.tools.mkdir_p( share )
+    eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
 
-
-eclipse_project_output_dir=os.path.join(share,'eclipse')
 options.srcDir = (src,)
 options.outDir = (eclipse_project_output_dir,)
 options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
