@@ -122,8 +122,8 @@ if not os.path.exists(share):
 
 from eclipsify_lib.eclipsify_gen_project import main
 
-eclipse_project=os.path.join(share,'eclipse')
-main(argv=[package, src, eclipse_project, os.path.join(workspace.getBuildSpace(), package)]);
+eclipse_project_output_dir=os.path.join(share,'eclipse')
+main(argv=[package, src, eclipse_project_output_dir, os.path.join(workspace.getBuildSpace(), package)]);
 
 # Add the package to a workspace if necessary.
 if options.eclipse_workspace:
@@ -136,7 +136,7 @@ if options.eclipse_workspace:
     if not os.path.exists(workspace):
         print colored("-- ERROR: The workspace path does not exist",'red')
         exit(2)
-    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project)
+    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project_output_dir)
     print cmd
     status = subprocess.call(cmd, shell=True)
     if status != 0:
