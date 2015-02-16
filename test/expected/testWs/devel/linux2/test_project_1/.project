@@ -28,7 +28,7 @@
 		<link>
 			<name>test_project_1_src</name>
 			<type>2</type>
-			<location>/home/hannes/catkin_ws/src/eclipsify/test/testWs/src/test_project_1</location>
+			<location>testWs/src/test_project_1</location>
 		</link>
 	</linkedResources>
 </projectDescription>
