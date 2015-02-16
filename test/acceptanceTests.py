@@ -8,8 +8,7 @@ import subprocess
 class EclipsifyAcceptance(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         unittest.TestCase.__init__(self, *args, **kwargs)
-        self.testEnv = os.environ;
-        self.testEnv['ECLIPSIFY_USE_RELATIVE_LOCATIONS_FOR_TESTING'] = "1"
+        os.environ['ECLIPSIFY_USE_RELATIVE_LOCATIONS_FOR_TESTING'] = "1"
 
     def _testGeneratorGeneratesSame(self, platform, projects = ['test_project_1'], testWorkspace = 'testWs/devel'):
         for project in projects:
@@ -21,8 +20,7 @@ class EclipsifyAcceptance(unittest.TestCase):
                              '-O', outDir, 
                              '--platform', platform, 
                              '-T', '=../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform, 
-                             project],
-                 #           self.testEnv
+                             project]
                             )
             #TODO(HannesSommer): write eclipsify output also to file and make it join the expected output! 
             pipe = os.popen('git diff '+ outDir + ' 2>&1')
