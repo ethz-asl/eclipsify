@@ -4,7 +4,7 @@
   <version>0.0.1</version>
   <description>test_project_1</description>
 
-  <maintainer email="paul.furgale@gmail.com">Paul Furgale</maintainer>
+  <maintainer email="hannes.sommer@mavt.ethz.ch">HannesSommmer</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>catkin</buildtool_depend>
