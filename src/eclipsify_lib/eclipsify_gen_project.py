@@ -23,7 +23,6 @@ def main(options = None):
         parser.add_argument("srcDir", nargs=1, help="The source directory.")
         parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
         parser.add_argument("buildDir", nargs=1, help="This project's build directory.")
-        #parser.add_argument("binDir", nargs=1, help="This project's bin directory.")
     
         options = parser.parse_args(sys.argv)
 
