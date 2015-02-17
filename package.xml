@@ -10,5 +10,6 @@
   <buildtool_depend>catkin</buildtool_depend>
   <buildtool_depend>catkin_simple</buildtool_depend>
 
+  <test_depend>unittest</test_depend>
 </package>
 

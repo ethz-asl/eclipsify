@@ -16,7 +16,8 @@ except:
 import os
 import sys
 from eclipsify_lib.tools import colored
- 
+from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
+
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import subprocess
 
@@ -37,9 +38,11 @@ must not have this workspace open in eclipse when you use -w.
 The project files will go to devel/share/project-name/eclipse"""
 
 parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+addCommonArguments(parser)
 
-parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
+parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created.')
+parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
 options = parser.parse_args()
 if options.eclipse_workspace:
@@ -47,11 +50,25 @@ if options.eclipse_workspace:
 
 package = options.package[0]
 
-catkin_workspaces = catkin.workspace.get_workspaces()
+useRelativeLocations = os.environ.has_key('ECLIPSIFY_USE_RELATIVE_LOCATIONS_FOR_TESTING');
+
+print "-- Searching workspaces:"
+if options.catkin_workspace:
+    import os.path;
+    catkin_workspaces = [options.catkin_workspace];
+    if not useRelativeLocations:
+        catkin_workspaces = [os.path.abspath(ws) for ws in catkin_workspaces]; 
+else:
+    catkin_workspaces = catkin.workspace.get_workspaces()
+    
+
 if len(catkin_workspaces) == 0:
     print colored('No workspaces! Please source the setup.bash file of some workspace before running this script.'.format(package),'red');
     exit(-1)
 
+print colored("--> Found %s" % (", ".join(catkin_workspaces)), 'green')
+
+print "-- Searching for %s:" % (package);
 
 class Workspace :
     def __init__(self, develSpace):
@@ -90,23 +107,26 @@ if foundCatkinPkg:
                         print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
                     else:
                         print colored('-- Package ambigous also in workspace {0} with source {1}'.format(ws, s), 'red')
-		    cnt+=1
+                    cnt+=1
 
 
 
 if not src or not isPackageSrc(src) :
     print colored('-- Could not find package {0}. Aborting.'.format(package), 'red')
     exit(-2)
+    
+print colored('--> Found {0}'.format(src), 'green')
+print
 
-share = os.path.join(workspace.getDevelSpace(), 'share', package)
-if not os.path.exists(share):
-    os.mkdir( share )
+eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package).replace('/', os.path.sep)
+if not os.path.exists(eclipse_project_output_dir):
+    import eclipsify_lib.tools
+    eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
 
-
-from eclipsify_lib.eclipsify_gen_project import main
-
-eclipse_project=os.path.join(share,'eclipse')
-main(argv=[package, src, eclipse_project, os.path.join(workspace.getBuildSpace(), package)]);
+options.srcDir = (src,)
+options.outDir = (eclipse_project_output_dir,)
+options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
+main(options);
 
 # Add the package to a workspace if necessary.
 if options.eclipse_workspace:
@@ -119,7 +139,7 @@ if options.eclipse_workspace:
     if not os.path.exists(workspace):
         print colored("-- ERROR: The workspace path does not exist",'red')
         exit(2)
-    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project)
+    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project_output_dir)
     print cmd
     status = subprocess.call(cmd, shell=True)
     if status != 0:

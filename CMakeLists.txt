@@ -18,3 +18,10 @@ catkin_python_setup()
 cs_install()
 cs_export(  CFG_EXTRAS eclipsify.cmake )
 
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(
+    test/acceptanceTests.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
+  )
+endif()
