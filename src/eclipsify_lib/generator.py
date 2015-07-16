@@ -36,33 +36,45 @@ class ProjectFilesGenerator:
 
     def verbose(self, text):
         if self._verbose : print (colored(text, 'yellow'))
+
+    def error(self, text):
+        print (colored(text, 'red'))
+        self.errors += 1
+
+    def okay(self, text):
+        print (colored(text, 'green'))
         
-    def generate(self, searchDirs, projectFiles, outputDir):
-        errors = 0
+    def generate(self, searchDirs, projectFiles, outputDir, forceOverwrite = False):
+        self.errors = 0
+        
         print("-- Generating project %s in directory '%s'" % (self._name, outputDir))
         self.verbose("--- Using template search path '%s'" % ( ":".join(searchDirs)))
         self.createDir(outputDir, '--')
         for projectFile in projectFiles :
-            print("--- Creating %s" % (projectFile))
-            self.createDir(projectFile.getFullDirPath(outputDir), '---')
-            try:
-                content = self.calcContent(searchDirs, projectFile.getFullPath());
-                with open(projectFile.getFullPath(outputDir), 'w') as outfile:
-                    print (content , file = outfile )
-                print (colored("--> OK", 'green'))
-            except tools.FindError as e:
-                print (colored("--> Failed: Could not find template file '%s' in search list %s!" % (e.file, searchDirs), 'red'))
-                errors += 1;
-        if errors == 0:
+            projectFileFullPath = projectFile.getFullPath(outputDir)
+            projectFileExists = os.path.exists(projectFileFullPath)
+            if (not projectFileExists or forceOverwrite) :
+                print("--- %s %s" % ("Overwriting" if projectFileExists else "Creating", projectFile))
+                self.createDir(projectFile.getFullDirPath(outputDir), '---')
+                try:
+                    content = self.calcContent(searchDirs, projectFile.getFullPath());
+                    with open(projectFileFullPath, 'w') as outfile:
+                        print (content , file = outfile )
+                    self.okay("--> OK")
+                except tools.FindError as e:
+                    self.error("--> Failed: Could not find template file '%s' in search list %s!" % (e.file, searchDirs))
+            else:
+                self.error("--- Skipping existing %s (use -f to overwrite)" % (projectFile))
+        if self.errors == 0:
             print(colored('-> Successfully created the project {0} in directory {1}'.format(self._name, outputDir), 'green'))
         else:
-            print(colored("-> Failed: Some errors occurred while created the project {0} in directory '{1}'".format(self._name, outputDir), 'red'))
+            self.error("-> Failed: Some errors occurred while created the project {0} in directory '{1}'".format(self._name, outputDir))
 
     def createDir(self, dirPath, prefix):
         if dir and not os.path.isdir(dirPath) :
             self.verbose(prefix + "- Creating directory '{0}'".format(dirPath))
             tools.mkdir_p(dirPath)
-            print (colored(prefix + "> OK", 'green'))
+            self.okay(prefix + "> OK")
 
     def calcContent(self, searchDirs, fileName):
         filePath = tools.findInSearchPath(searchDirs, fileName)
