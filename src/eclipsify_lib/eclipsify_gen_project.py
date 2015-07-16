@@ -70,5 +70,5 @@ def main(options = None):
     
     config = EclipsifyConfig();
     if precondition.fullfilled(config):
-        #TODO use config object also for generator input
+        #TODO(HannesSommer) use config object also for generator input
         projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite = options.force);
