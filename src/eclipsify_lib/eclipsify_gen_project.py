@@ -57,4 +57,18 @@ def main(options = None):
     import projectFiles
     
     projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0])
-    projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite = options.force);
+    
+    import precondition
+
+    class EclipsifyConfig():
+        def __init__(self):
+            self.platform = platform;
+            self.package = package
+            self.srcDir = options.srcDir[0]
+            self.outDir = outputDir
+            self.options = options
+    
+    config = EclipsifyConfig();
+    if precondition.fullfilled(config):
+        #TODO use config object also for generator input
+        projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite = options.force);
