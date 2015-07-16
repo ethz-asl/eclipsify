@@ -54,7 +54,7 @@ class ProjectFilesGenerator:
             projectFileFullPath = projectFile.getFullPath(outputDir)
             projectFileExists = os.path.exists(projectFileFullPath)
             if (not projectFileExists or forceOverwrite) :
-                print("--- %s %s" % ("Overwriting" if projectFileExists else "Creating", projectFile))
+                print("--- %s %s" % ("Overwriting" if projectFileExists else "Creating", projectFileFullPath))
                 self.createDir(projectFile.getFullDirPath(outputDir), '---')
                 try:
                     content = self.calcContent(searchDirs, projectFile.getFullPath());
