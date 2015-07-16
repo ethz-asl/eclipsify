@@ -48,6 +48,9 @@ def main(options = None):
     templateSearchPaths = options.templates.split(':')
     if extendWithDefaultTemplatePaths:
       templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+
+    # get rid of empty template search paths
+    templateSearchPaths = [ p for p in templateSearchPaths if (p) ]
     
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
