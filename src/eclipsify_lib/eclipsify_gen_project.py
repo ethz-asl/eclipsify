@@ -7,6 +7,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 def addCommonArguments(parser):
     parser.add_argument('-v', '--verbose', action='count', help="Verbosity level.", default=0)
+    parser.add_argument("-f", "--force", action='count', help="Force overwriting existing files.", default=False)
     parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
     parser.add_argument("--platform", help="Platform (defaults to sys.platform).", default=sys.platform)
     parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
@@ -48,9 +49,26 @@ def main(options = None):
     templateSearchPaths = options.templates.split(':')
     if extendWithDefaultTemplatePaths:
       templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+
+    # get rid of empty template search paths
+    templateSearchPaths = [ p for p in templateSearchPaths if (p) ]
     
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
     
     projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0])
-    projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir);
+    
+    import precondition
+
+    class EclipsifyConfig():
+        def __init__(self):
+            self.platform = platform;
+            self.package = package
+            self.srcDir = options.srcDir[0]
+            self.outDir = outputDir
+            self.options = options
+    
+    config = EclipsifyConfig();
+    if precondition.fullfilled(config):
+        #TODO(HannesSommer) use config object also for generator input
+        projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite = options.force);

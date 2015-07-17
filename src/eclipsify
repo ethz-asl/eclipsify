@@ -40,8 +40,11 @@ The project files will go to devel/share/project-name/eclipse"""
 parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
 addCommonArguments(parser)
 
+outputInSourceOutputDir = '{src}'
+
 parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
-parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created.')
+parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\'". Any "-O" will be ignored!' % outputInSourceOutputDir)
+parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
 options = parser.parse_args()
@@ -118,7 +121,12 @@ if not src or not isPackageSrc(src) :
 print colored('--> Found {0}'.format(src), 'green')
 print
 
-eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package).replace('/', os.path.sep)
+if options.outputInSource :
+    if options.verbose : print(colored("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir, 'yellow'));
+    options.projectOutputDir = outputInSourceOutputDir
+
+eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
+
 if not os.path.exists(eclipse_project_output_dir):
     import eclipsify_lib.tools
     eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
