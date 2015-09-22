@@ -14,7 +14,6 @@ except:
     print("or use the eclipsify-gen-project cli tool.")
 
 import os
-import sys
 from eclipsify_lib.tools import colored
 from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
 
