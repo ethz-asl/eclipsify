@@ -9,6 +9,7 @@ def addCommonArguments(parser):
     parser.add_argument('-v', '--verbose', action='count', help="Verbosity level.", default=0)
     parser.add_argument("-f", "--force", action='count', help="Force overwriting existing files.", default=False)
     parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
+    parser.add_argument('-D', '--define', action='append', metavar="DEFINE[=VALUE]", help="Add cpp (c pre-processor) definitions.", default=[])
     parser.add_argument("--platform", help="Platform (defaults to sys.platform).", default=sys.platform)
     parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
@@ -30,8 +31,16 @@ def main(options = None):
     platform = options.platform
     outputDir = options.outDir[0]
     package = options.package[0]
-    
+
+    cppMacroDict = dict()
     print("eclipsify package %s for platform %s" % (package, platform))
+    if len(options.define) :
+        print("\tactive cpp macros / defines :");
+        for opt in options.define:
+            print("\t\t" + opt);
+            parts = opt.split('=', 2);
+            cppMacroDict[parts[0]] =  parts[1] if len(parts) > 1 else '1'
+
     print("----------")
 
     libDir = os.path.dirname(__file__);
@@ -48,7 +57,7 @@ def main(options = None):
         options.templates = options.templates[1:]
     templateSearchPaths = options.templates.split(':')
     if extendWithDefaultTemplatePaths:
-      templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+        templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
 
     # get rid of empty template search paths
     templateSearchPaths = [ p for p in templateSearchPaths if (p) ]
@@ -56,7 +65,7 @@ def main(options = None):
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
     import projectFiles
     
-    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0])
+    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0], cppMacros = cppMacroDict)
     
     import precondition
 
