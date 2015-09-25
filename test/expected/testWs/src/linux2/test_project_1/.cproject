@@ -18,7 +18,7 @@
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.1726502031.1312995133" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.base.39642596" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.895951241" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
-							<builder arguments="make VERBOSE=1" buildPath="{buildDir}" command="{buildDir}/build_env.sh"  id="cdt.managedbuild.target.gnu.builder.base.2056731561" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<builder arguments="make VERBOSE=1" buildPath="testWs/build/test_project_1" command="testWs/build/test_project_1/build_env.sh"  id="cdt.managedbuild.target.gnu.builder.base.2056731561" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1617669463" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.441413801" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1443765429" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" valueType="definedSymbols">
@@ -41,24 +41,18 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-#ifndef IN_SOURCE
-					<sourceEntries>
-						<entry excluding="{name}_src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="{name}_src"/>
-					</sourceEntries>
-#endif
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="${{ProjName}}.null.608317806" name="${{ProjName}}"/>
+		<project id="${ProjName}.null.608317806" name="${ProjName}"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/${{ProjName}}"/>
+			<resource resourceType="PROJECT" workspacePath="/${ProjName}"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
@@ -72,3 +66,4 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
+

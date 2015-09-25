@@ -24,6 +24,7 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+#ifndef IN_SOURCE
 	<linkedResources>
 		<link>
 			<name>{name}_src</name>
@@ -31,4 +32,5 @@
 			<location>{srcDir}</location>
 		</link>
 	</linkedResources>
+#endif
 </projectDescription>

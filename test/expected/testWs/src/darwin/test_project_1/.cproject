@@ -14,11 +14,11 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${{ProjName}}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="${ProjName}" buildProperties="" description="" id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326" name="Default" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.1074977965" name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.1749184169" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.1726019626" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder arguments="make VERBOSE=1" buildPath="{buildDir}" command="{buildDir}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.390563205" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
+							<builder arguments="make VERBOSE=1" buildPath="testWs/build/test_project_1" command="testWs/build/test_project_1/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.390563205" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.108155396" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.985489660" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1629794530" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -38,12 +38,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-#ifndef IN_SOURCE
-					<sourceEntries>
-						<entry excluding="{name}_src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="{name}_src"/>
-					</sourceEntries>
-#endif
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -61,11 +55,11 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="${{ProjName}}" buildProperties="" description="Run the tests" id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.2127756105" name="Run Tests" parent="org.eclipse.cdt.build.core.emptycfg">
+				<configuration artifactName="${ProjName}" buildProperties="" description="Run the tests" id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.2127756105" name="Run Tests" parent="org.eclipse.cdt.build.core.emptycfg">
 					<folderInfo id="cdt.managedbuild.toolchain.gnu.macosx.base.205247326.2127756105." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.49520016" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.394020843" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder arguments="make run_tests" buildPath="{buildDir}" command="{buildDir}/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.1973106851" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base" incrementalBuildTarget="tests"/>
+							<builder arguments="make run_tests" buildPath="testWs/build/test_project_1" command="testWs/build/test_project_1/build_env.sh" id="cdt.managedbuild.target.gnu.builder.macosx.base.1973106851" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.macosx.base" incrementalBuildTarget="tests"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1655895046" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.1992604494" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1346160487" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
@@ -91,15 +85,15 @@
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="{name}.null.1248448670" name="{name}"/>
+		<project id="test_project_1.null.1248448670" name="test_project_1"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Default">
-			<resource resourceType="PROJECT" workspacePath="/{name}"/>
+			<resource resourceType="PROJECT" workspacePath="/test_project_1"/>
 		</configuration>
 		<configuration configurationName="Run Tests">
-			<resource resourceType="PROJECT" workspacePath="/{name}"/>
+			<resource resourceType="PROJECT" workspacePath="/test_project_1"/>
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
@@ -119,3 +113,4 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
+
