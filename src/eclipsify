@@ -131,8 +131,8 @@ class PackageCollector:
                     self.workspace = Workspace(ws)
                     self.src = s
                     print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
-                else:
-                    print colored('-- Package ambigous also in workspace {0} with source {1}'.format(ws, s), 'red')
+                elif self.workspace._develspace != ws or self.src != s:
+                    print colored('-- Package ambiguous also in workspace {0} with source {1}'.format(ws, s), 'red')
                 self.cnt+=1
         else:
             if options.verbose : print(colored("Is no package.", 'yellow'));
