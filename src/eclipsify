@@ -50,13 +50,14 @@ parser = ArgumentParser(description=usage)
 addCommonArguments(parser)
 
 outputInSourceOutputDir = '{src}'
+defaultOutputDir = "{devel}/share/{package}/eclipse"
 
 parser.add_argument('-w', dest='eclipse_workspace', help="""The path to the eclipse workspace that this package should be added to.
 WARNING: This is going to be very slow in some situations 
 (see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information). 
 As an alternative consider "File -> Import -> Existing Projects into Workspace" from within eclipse. There you can even import multiple projects at once.""")
 parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
-parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
+parser.add_argument('-O', dest='projectOutputDir', default=defaultOutputDir, help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
 options = parser.parse_args()
@@ -162,7 +163,10 @@ print
 
 if options.outputInSource :
     if options.verbose : print(colored("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir, 'yellow'));
-    options.projectOutputDir = outputInSourceOutputDir
+    if options.projectOutputDir == defaultOutputDir:
+        options.projectOutputDir = outputInSourceOutputDir
+    else:
+        if options.verbose : print(colored("Output directory already set to %s" %options.projectOutputDir, 'yellow'))
 
 eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
 
