@@ -54,6 +54,10 @@ if options.eclipse_workspace:
 
 package = options.package[0]
 
+if package:
+    package = package.strip('/')
+    options.package[0] = package
+
 useRelativeLocations = os.environ.has_key('ECLIPSIFY_USE_RELATIVE_LOCATIONS_FOR_TESTING');
 
 print "-- Searching workspaces:"
