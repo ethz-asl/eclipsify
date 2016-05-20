@@ -35,6 +35,8 @@ def check_ps_cmd(script_name):
             return True
     return False
 
+defaultOutputDir = "{devel}/share/{package}/eclipse"
+
 usage="""
 This utility creates a new eclipse project. It assumes the package is
 in a workspace with the default names for the devel/build/src spaces.
@@ -44,7 +46,7 @@ eclipse workspace, the project is added to the eclipse workspace. You
 must not have this workspace open in eclipse when you use -w. 
 Unfortunately this can be slow; see below.
 
-The project files will go to devel/share/project-name/eclipse unless -s or -O are used."""
+The project files will go to %s/ unless -s or -O are used.""" % defaultOutputDir
 
 parser = ArgumentParser(description=usage)
 addCommonArguments(parser)
@@ -56,7 +58,7 @@ WARNING: This is going to be very slow in some situations
 (see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information). 
 As an alternative consider "File -> Import -> Existing Projects into Workspace" from within eclipse. There you can even import multiple projects at once.""")
 parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
-parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
+parser.add_argument('-O', dest='projectOutputDir', default=defaultOutputDir, help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 
 options = parser.parse_args()
@@ -130,8 +132,8 @@ class PackageCollector:
                     self.workspace = Workspace(ws)
                     self.src = s
                     print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
-                else:
-                    print colored('-- Package ambigous also in workspace {0} with source {1}'.format(ws, s), 'red')
+                elif self.workspace._develspace != ws or self.src != s:
+                    print colored('-- Package ambiguous also in workspace {0} with source {1}'.format(ws, s), 'red')
                 self.cnt+=1
         else:
             if options.verbose : print(colored("Is no package.", 'yellow'));
@@ -162,7 +164,10 @@ print
 
 if options.outputInSource :
     if options.verbose : print(colored("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir, 'yellow'));
-    options.projectOutputDir = outputInSourceOutputDir
+    if options.projectOutputDir == defaultOutputDir:
+        options.projectOutputDir = outputInSourceOutputDir
+    else:
+        if options.verbose : print(colored("Output directory already set to %s" %options.projectOutputDir, 'yellow'))
 
 eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
 
