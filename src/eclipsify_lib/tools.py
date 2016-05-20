@@ -1,10 +1,11 @@
 import errno
 import os
 import sys
+import exceptions
 
 try:
     from termcolor import colored
-except:
+except exceptions.ImportError:
     print("Unable to import termcolor.")
     print("Try:")
     print("sudo pip install termcolor")
