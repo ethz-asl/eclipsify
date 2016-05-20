@@ -35,6 +35,8 @@ def check_ps_cmd(script_name):
             return True
     return False
 
+defaultOutputDir = "{devel}/share/{package}/eclipse"
+
 usage="""
 This utility creates a new eclipse project. It assumes the package is
 in a workspace with the default names for the devel/build/src spaces.
@@ -44,13 +46,12 @@ eclipse workspace, the project is added to the eclipse workspace. You
 must not have this workspace open in eclipse when you use -w. 
 Unfortunately this can be slow; see below.
 
-The project files will go to devel/share/project-name/eclipse unless -s or -O are used."""
+The project files will go to %s/ unless -s or -O are used.""" % defaultOutputDir
 
 parser = ArgumentParser(description=usage)
 addCommonArguments(parser)
 
 outputInSourceOutputDir = '{src}'
-defaultOutputDir = "{devel}/share/{package}/eclipse"
 
 parser.add_argument('-w', dest='eclipse_workspace', help="""The path to the eclipse workspace that this package should be added to.
 WARNING: This is going to be very slow in some situations 
