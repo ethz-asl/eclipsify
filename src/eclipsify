@@ -18,7 +18,14 @@ import os
 from eclipsify_lib.tools import colored
 from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
 
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+if not os.environ.has_key('COLUMNS'):
+    try:
+        rows, columns = os.popen('stty size', 'r').read().split()
+        os.environ['COLUMNS'] = str(columns)
+    except:
+        pass
+
+from argparse import ArgumentParser
 import subprocess
 
 def check_ps_cmd(script_name):
@@ -33,16 +40,20 @@ in a workspace with the default names for the devel/build/src spaces.
 If your workspace is different, try eclipsify-gen-project. If the
 command is called with the optional -w option, pointing to an existing
 eclipse workspace, the project is added to the eclipse workspace. You 
-must not have this workspace open in eclipse when you use -w.
+must not have this workspace open in eclipse when you use -w. 
+Unfortunately this can be slow; see below.
 
-The project files will go to devel/share/project-name/eclipse"""
+The project files will go to devel/share/project-name/eclipse unless -s or -O are used."""
 
-parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+parser = ArgumentParser(description=usage)
 addCommonArguments(parser)
 
 outputInSourceOutputDir = '{src}'
 
-parser.add_argument('-w', dest='eclipse_workspace', help='The path to the eclipse workspace that this package should be added to.')
+parser.add_argument('-w', dest='eclipse_workspace', help="""The path to the eclipse workspace that this package should be added to.
+WARNING: This is going to be very slow in some situations 
+(see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information). 
+As an alternative consider "File -> Import -> Existing Projects into Workspace" from within eclipse. There you can even import multiple projects at once.""")
 parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
 parser.add_argument('-O', dest='projectOutputDir', default="{devel}/share/{package}/eclipse", help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
