@@ -41,10 +41,12 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+#ifndef IN_SOURCE
 					<sourceEntries>
 						<entry excluding="{name}_src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="{name}_src"/>
 					</sourceEntries>
+#endif
 				</configuration>
 			</storageModule>
 			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
@@ -70,4 +72,3 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
-

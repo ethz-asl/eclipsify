@@ -24,4 +24,8 @@ if(CATKIN_ENABLE_TESTING)
     test/acceptanceTests.py
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
   )
+  catkin_add_nosetests(
+    test/unitTests.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/test
+  )
 endif()

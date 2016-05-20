@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>{name}</name>
+	<name>test_project_1</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -24,13 +24,5 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
-#ifndef IN_SOURCE
-	<linkedResources>
-		<link>
-			<name>{name}_src</name>
-			<type>2</type>
-			<location>{srcDir}</location>
-		</link>
-	</linkedResources>
-#endif
 </projectDescription>
+
