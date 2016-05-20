@@ -19,7 +19,14 @@ import sys
 from eclipsify_lib.tools import colored
 from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
 
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+if not os.environ.has_key('COLUMNS'):
+    try:
+        rows, columns = os.popen('stty size', 'r').read().split()
+        os.environ['COLUMNS'] = str(columns)
+    except:
+        pass
+
+from argparse import ArgumentParser
 import subprocess
 
 def check_ps_cmd(script_name):
@@ -39,7 +46,7 @@ Unfortunately this can be slow; see below.
 
 The project files will go to devel/share/project-name/eclipse unless -s or -O are used."""
 
-parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+parser = ArgumentParser(description=usage)
 addCommonArguments(parser)
 
 outputInSourceOutputDir = '{src}'
