@@ -1,0 +1,7 @@
+#define TEST_DEF BLADEF
+BLA
+TEST_DEF
+#ifdef COND
+IfContent
+#endif
+END

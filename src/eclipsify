@@ -15,7 +15,6 @@ except exceptions.ImportError:
     print("or use the eclipsify-gen-project cli tool.")
 
 import os
-import sys
 from eclipsify_lib.tools import colored
 from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
 
@@ -168,6 +167,7 @@ if options.outputInSource :
         options.projectOutputDir = outputInSourceOutputDir
     else:
         if options.verbose : print(colored("Output directory already set to %s" %options.projectOutputDir, 'yellow'))
+    options.define.append('IN_SOURCE=1');
 
 eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
 

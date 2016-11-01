@@ -10,6 +10,53 @@ if sys.version_info[0] == 3:
 else:
     string_types = basestring
 
+import re
+commentFilter = re.compile(r'^\s*#')
+
+import subprocess
+import io
+import StringIO
+
+
+cppAvailable = subprocess.call(["sh", "-c", "echo | cpp > /dev/null 2>&1"]) == 0
+if not cppAvailable:
+    print(colored("""Warning:
+    Unable to run the c pre processor (command cpp).
+    Without it eclipsify won't be able to instantiate the templates relying on cpp correctly.
+    On Ubuntu or Debian run 'sudo apt-get install cpp' to install it.
+    """, 'red'))
+
+
+def applyCppAndStripCommentsIntoFile(fileName, definitions, outfile, useCpp):
+    stderr = None
+    if useCpp:
+        args = ''
+        for key, value in definitions.iteritems():
+            args += "'-D%s=%s' " % (key, value)
+        pipe = subprocess.Popen("cpp -traditional-cpp %s '%s'" %(args, fileName), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        source = pipe.stdout
+        stderr = pipe.stderr
+    else:
+        source = io.open(fileName, 'r')
+    
+    for line in source.readlines():
+        if line != '\n' and not commentFilter.match(line):
+            print(line, end='', file = outfile)
+            
+    if stderr:
+        for line in stderr.readlines():
+            print(colored(line, 'red'), end='')
+        stderr.close()
+    
+    source.close()
+
+def applyCppAndStripComments(fileName, definitions, useCpp):
+    output = StringIO.StringIO()
+    applyCppAndStripCommentsIntoFile(fileName, definitions, output, useCpp)
+    value = output.getvalue()
+    output.close()
+    return value
+
 class ProjectFile:
     def __init__(self, name, dirPath = None):
         self._name = name;
@@ -28,11 +75,12 @@ class ProjectFile:
         return self.getFullPath();
 
 class ProjectFilesGenerator:
-    def __init__(self, verbose, name, srcDir, buildDir) :
+    def __init__(self, verbose, name, srcDir, buildDir, cppMacros) :
         self._verbose = verbose
         self._name = name
         self._srcDir = srcDir
         self._buildDir = buildDir
+        self._cppMacros = cppMacros
 
     def verbose(self, text):
         if self._verbose : print (colored(text, 'yellow'))
@@ -79,6 +127,5 @@ class ProjectFilesGenerator:
     def calcContent(self, searchDirs, fileName):
         filePath = tools.findInSearchPath(searchDirs, fileName)
         self.verbose("---- Instantiating template file '%s'" % filePath);
-        with open(filePath, 'r') as content_file:
-            content = content_file.read()
-            return content.format(name = self._name, buildDir = self._buildDir, srcDir = self._srcDir)
+        content = applyCppAndStripComments(filePath, self._cppMacros, cppAvailable)
+        return content.format(name = self._name, buildDir = self._buildDir, srcDir = self._srcDir)
