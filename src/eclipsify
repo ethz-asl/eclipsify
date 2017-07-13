@@ -4,7 +4,7 @@ import catkin.workspace
 import exceptions
 
 try:
-    import catkin_pkg.packages
+    import catkin_pkg.package
     foundCatkinPkg = True
 except exceptions.ImportError:
     foundCatkinPkg = False
@@ -124,7 +124,7 @@ class PackageCollector:
     def processPackage(self, s):
         if options.verbose : print(colored("Testing package candidate '%s'." % s, 'yellow'));
         if isPackageSrc(s):
-            p = catkin_pkg.packages.parse_package(s);
+            p = catkin_pkg.package.parse_package(s);
             if options.verbose : print(colored("Is package named %s" % p.name, 'yellow'));
             if(p.name == package):
                 if self.cnt==0:
@@ -147,7 +147,7 @@ if foundCatkinPkg:
                 pkgCollector.processPackage(s)
             else:
                 if options.verbose : print(colored("Digging into source path '%s'." % s, 'yellow'));
-                for p in catkin_pkg.packages.find_packages(s):
+                for p in catkin_pkg.package.find_packages(s):
                     pkgCollector.processPackage(os.path.join(s, p))
     
     if pkgCollector.src:
