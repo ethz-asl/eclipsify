@@ -4,15 +4,20 @@ import catkin.workspace
 import exceptions
 
 try:
-    import catkin_pkg.package
+    from catkin_pkg.packages import find_packages
+    from catkin_pkg.package import parse_package
     foundCatkinPkg = True
 except exceptions.ImportError:
-    foundCatkinPkg = False
-    print("Unable to import catkin_pkg.")
-    print("Without it eclipsify won't find packages in subfolders of the 'src' folder or in other than the top level workspace.")
-    print("If this is needed try:")
-    print("  sudo apt-get install catkin_pkg")
-    print("or use the eclipsify-gen-project cli tool.")
+  try:
+      from catkin_pkg.package import find_packages, parse_package
+      foundCatkinPkg = True
+  except exceptions.ImportError as e:
+      foundCatkinPkg = False
+      print("Unable to import catkin_pkg (%s)." % e)
+      print("Without it eclipsify won't find packages in subfolders of the 'src' folder or in other than the top level workspace.")
+      print("If this is needed try:")
+      print("  sudo apt-get install catkin_pkg")
+      print("or use the eclipsify-gen-project cli tool.")
 
 import os
 from eclipsify_lib.tools import colored
@@ -122,10 +127,10 @@ class PackageCollector:
         self.workspace = None
 
     def processPackage(self, s):
-        if options.verbose : print(colored("Testing package candidate '%s'." % s, 'yellow'));
+        if options.verbose : print(colored("Testing package candidate in folder '%s'." % s, 'yellow'));
         if isPackageSrc(s):
-            p = catkin_pkg.package.parse_package(s);
-            if options.verbose : print(colored("Is package named %s" % p.name, 'yellow'));
+            p = parse_package(s);
+            if options.verbose : print(colored("Found package named '%s'." % p.name, 'yellow'));
             if(p.name == package):
                 if self.cnt==0:
                     self.workspace = Workspace(ws)
@@ -147,7 +152,7 @@ if foundCatkinPkg:
                 pkgCollector.processPackage(s)
             else:
                 if options.verbose : print(colored("Digging into source path '%s'." % s, 'yellow'));
-                for p in catkin_pkg.package.find_packages(s):
+                for p in find_packages(s):
                     pkgCollector.processPackage(os.path.join(s, p))
     
     if pkgCollector.src:
