@@ -1,7 +1,31 @@
 # Eclipsify
 Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works for OSX, Ubuntu 14.04, and Ubuntu 16.04.
 
-```
+### Installation
+- Download [wstools](http://wiki.ros.org/wstool)
+
+- Clone the **eclipsify** repository into your catkin workspace
+
+- Download Dependencies  
+
+    - CD into your workspace top level directory and run the following commands
+
+        ```
+        wstool init src
+        wstool merge -t src src/eclipsify/.rosinstall
+        wstool update -t src
+        ```
+    - The last command will download the required repositories into your workspace
+
+- Build the eclipsify package
+
+  ```
+  catkin build eclipsify
+  ```
+
+### Usage
+
+```    
 usage: eclipsify [-h] [-v] [-f] [-T TEMPLATES] [-D DEFINE[=VALUE]] [--platform PLATFORM]
                  [-w ECLIPSE_WORKSPACE] [-s] [-O PROJECTOUTPUTDIR] [-W,--catkin-ws CATKIN_WORKSPACE]
                  package
@@ -39,3 +63,23 @@ optional arguments:
                         to the workspace's devel space! Default is to use the current catkin
                         workspace layers ("sourced").
 ```
+
+### Example
+
+In order to create eclipse project files for a ros package called **my_pkg** that lives in a 
+catkin workspace then do the following:
+- CD into the top level directory of your workspace
+
+- Run eclipsify
+    ```
+    eclipsify my_pkg -O project/my_pkg
+    ```
+
+  This will create the eclipse project files in the **project/my_pkg**.  At this point
+  you can import the project into [Eclipse CDT](https://www.eclipse.org/cdt/) by opening
+  eclipse and browsing to the the directory just created using the **Import** feature. 
+  Make sure select the "Existing Project into Workspace" option under the "General" category
+  shown in the *Import* window.
+  
+
+
