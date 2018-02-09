@@ -64,22 +64,36 @@ optional arguments:
                         workspace layers ("sourced").
 ```
 
-### Example
-
+### Examples
 In order to create eclipse project files for a ros package called **my_pkg** that lives in a 
 catkin workspace then do the following:
 - CD into the top level directory of your workspace
 
 - Run eclipsify
     ```
+    eclipsify my_pkg
+    ```
+    This is the default case and the generated project files go into **\<catkin workspace>/devel/share/my_pkg/eclipse/** and the my_pkg source folder gets linked into the project.
+    
+  At this point you can import the project into [Eclipse CDT](https://www.eclipse.org/cdt/) by browsing
+  to the project files directory just created from the **Import** window in eclipse.
+  Make sure to select the "Existing Project into Workspace" option under the "General" category
+  shown in the **Import** window.
+  
+- Alternatively, you can run this command from your workspace root directory:
+    ```
     eclipsify my_pkg -O project/my_pkg
     ```
 
-  This will create the eclipse project files in the **project/my_pkg**.  At this point
-  you can import the project into [Eclipse CDT](https://www.eclipse.org/cdt/) by opening
-  eclipse and browsing to the the directory just created using the **Import** feature. 
-  Make sure select the "Existing Project into Workspace" option under the "General" category
-  shown in the *Import* window.
+  This will create the eclipse project files in the **\<catkin workspace>/project/my_pkg**.  This options is useful if 
+  you'd like to keep IDE project files outside of your tracked repository directories.
+    
+ - Another option is the following:
+    ```
+    eclipsify -s my_pkg
+    ```
+    In this case the generated project files go into the source folder of my_pkg (e.g. src/my_pkg). And no linked folder gets created.
+ 
   
 
 
