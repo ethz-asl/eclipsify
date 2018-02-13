@@ -1,7 +1,37 @@
 # Eclipsify
-Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works for OSX, Ubuntu 14.04, and Ubuntu 16.04.
+Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works at least for OSX, Ubuntu 14.04, and Ubuntu 16.04.
 
-```
+### Requirements
+* [Eclipse CDT](https://www.eclipse.org/cdt/)
+* [catkin tools](https://catkin-tools.readthedocs.io/)
+
+### Installation
+- Clone the **eclipsify** repository into your catkin workspace
+
+- Retrieve dependencies by performing one of the following alternatives:
+  1. Using `wstools` :
+      - Install [wstools](http://wiki.ros.org/wstool)
+      - CD into your workspace top level directory and run the following commands
+
+          ```
+          wstool init src
+          wstool merge -t src src/eclipsify/.rosinstall
+          wstool update -t src
+        ```
+      - The last command will download the required repositories into your workspace
+
+  2. Manually:
+      - Clone all the missing dependences listed in [.rosinstall](.rosinstall) into your catkin workspace
+
+- Build the **eclipsify** package
+
+  ```
+  catkin build eclipsify
+  ```
+
+### Usage
+
+```    
 usage: eclipsify [-h] [-v] [-f] [-T TEMPLATES] [-D DEFINE[=VALUE]] [--platform PLATFORM]
                  [-w ECLIPSE_WORKSPACE] [-s] [-O PROJECTOUTPUTDIR] [-W,--catkin-ws CATKIN_WORKSPACE]
                  package
@@ -39,3 +69,55 @@ optional arguments:
                         to the workspace's devel space! Default is to use the current catkin
                         workspace layers ("sourced").
 ```
+
+### Examples
+In order to create eclipse project files for a ros package called **my_pkg** that lives in a 
+catkin do the following:
+
+- `cd` into the top level directory of your **catkin workspace**
+
+- Run **eclipsify** to generate Eclipse project files by performing one of the following alternatives:
+  1. Project files in catkin devel-space:
+      ```
+      eclipsify my_pkg
+      ```
+      The generated project files go into **\<catkin workspace>/devel/share/my_pkg/eclipse/** and the my_pkg source folder gets linked into the project.
+
+  2. Other separate project files folder (e.g. `project`):
+
+      This options is useful if you'd like to keep IDE project files outside of your tracked repository directories and the catkin devel-space.
+      ```
+      eclipsify my_pkg -O project/my_pkg
+      ```
+
+      This will create the eclipse project files in the **\<catkin workspace>/project/my_pkg** and also link it to my_pkg source folder.
+
+  3. In-source option (required by **EGit**):
+      ```
+      eclipsify -s my_pkg
+      ```
+      In this case the generated project files go into the source folder of my_pkg (e.g. src/my_pkg).
+      Currently EGit (Eclipse's git plugin) requires the project files to reside within the src folder under git's version control.
+      To mitigate the problem of accidentally committed project files, a [global git ignore file](https://help.github.com/articles/ignoring-files/#create-a-global-gitignore) is an interesting option. 
+      For example with the following content:
+      ```
+      # Ignore Eclipse project files
+      .project
+      .settings/
+      ## Eclipse CDT
+      .cproject
+      .csettings/
+      ## Eclipse pydev
+      .pydevproject
+      ## TeXlipse
+      .texlipse
+      ```
+- **Import** into an Eclipse workspace through one of the following alternatives:
+
+  1. Import the project by browsing to the project files directory just created from the **Import** window in eclipse.
+  Make sure to select the "Existing Project into Workspace" option under the "General" category
+  shown in the **Import** window.
+  
+  2. **EGit** option (assuming my_pkg being under git version control):
+      - **Add** the my_pkg source folder as git repository to the Eclipse workspace using EGit
+      - Right click on the repository and select **Improt Projects...**
