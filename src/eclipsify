@@ -1,26 +1,9 @@
 #!/usr/bin/env python
 
 import catkin.workspace
-import exceptions
-
-try:
-    from catkin_pkg.packages import find_packages
-    from catkin_pkg.package import parse_package
-    foundCatkinPkg = True
-except exceptions.ImportError:
-  try:
-      from catkin_pkg.package import find_packages, parse_package
-      foundCatkinPkg = True
-  except exceptions.ImportError as e:
-      foundCatkinPkg = False
-      print("Unable to import catkin_pkg (%s)." % e)
-      print("Without it eclipsify won't find packages in subfolders of the 'src' folder or in other than the top level workspace.")
-      print("If this is needed try:")
-      print("  sudo apt-get install catkin_pkg")
-      print("or use the eclipsify-gen-project cli tool.")
-
 import os
-from eclipsify_lib.tools import colored
+from eclipsify_lib.package_tools import *
+from eclipsify_lib.tools import colored, verbose, error, okay, setVerbose
 from eclipsify_lib.eclipsify_gen_project import main, addCommonArguments
 
 if not os.environ.has_key('COLUMNS'):
@@ -64,16 +47,17 @@ As an alternative consider "File -> Import -> Existing Projects into Workspace" 
 parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
 parser.add_argument('-O', dest='projectOutputDir', default=defaultOutputDir, help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
+parser.add_argument("packages", nargs="+", help="The names of the catkin packages to be eclipsified.")
 
 options = parser.parse_args()
+
+setVerbose(options.verbose)
+
 if options.eclipse_workspace:
     import psutil
 
-package = options.package[0]
-
-if package:
-    package = package.strip('/')
-    options.package[0] = package
+packages = [ package.strip('/') for package in options.packages ]
+del options.packages
 
 useRelativeLocations = os.environ.has_key('ECLIPSIFY_USE_RELATIVE_LOCATIONS_FOR_TESTING');
 
@@ -88,118 +72,90 @@ else:
     
 
 if len(catkin_workspaces) == 0:
-    print colored('No workspaces! Please source the setup.bash file of some workspace before running this script.'.format(package),'red');
+    error('No workspaces! Please source the setup.bash file of some workspace before running this script.');
     exit(-1)
 
-print colored("--> Found %s" % (", ".join(catkin_workspaces)), 'green')
+okay("--> Found %s" % (", ".join(catkin_workspaces)))
 
-print "-- Searching for %s:" % (package);
+errors = []
+for package in packages:
+  print "\n*************** Searching for package %s ***********************" % (package);
+  src = None
+  workspace = None
 
-class Workspace :
-    def __init__(self, develSpace):
-        self._develspace = develSpace
-        self._base = os.path.dirname(develSpace)
-        
-    def getPath(self):
-        return self._base;
-    def getDevelSpace(self):
-        return self._develspace;
-    def getBuildSpace(self):
-        return os.path.join(self._base, 'build');
-    def getSourceFolder(self):
-        return os.path.join(self._base, 'src');
+  # Initialize with a good guess. This helps find 
+  # pure cmake packages that are not found by the method below.
+  workspace = Workspace(catkin_workspaces[0])
+  src = os.path.join(workspace.getSourceFolder(), package)
 
-src = None
-workspace = None
+  if foundCatkinPkg:
+      pkgCollector = PackageCollector(package)
+      for ws in catkin_workspaces:
+          verbose("Searching workspace '%s'." % ws);
+          for s in catkin.workspace.get_source_paths(ws): # this can yield actual workspace source paths or packages depending on the catkin methods used
+              
+              if isPackageSrc(s): 
+                  pkgCollector.processPackage(s, ws)
+              else:
+                  verbose("Digging into source path '%s'." % s);
+                  for p in find_packages(s):
+                      pkgCollector.processPackage(os.path.join(s, p), ws)
+      
+      if pkgCollector.src:
+          src = pkgCollector.src
+          workspace = pkgCollector.workspace
+  
+  if not src or not isPackageSrc(src) :
+      error('-- Could not find package {0}. Aborting.'.format(package))
+      errors.append(1)
+      continue
+      
+  okay("--> Found {0}\n".format(src))
+  
+  if options.outputInSource :
+      verbose("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir);
+      if options.projectOutputDir == defaultOutputDir:
+          options.projectOutputDir = outputInSourceOutputDir
+      else:
+          verbose("Output directory already set to %s" %options.projectOutputDir)
+      options.define.append('IN_SOURCE=1');
+  
+  eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
+  
+  if not os.path.exists(eclipse_project_output_dir):
+      import eclipsify_lib.tools
+      eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
+  
+  options.srcDir = (src,)
+  options.outDir = (eclipse_project_output_dir,)
+  options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
+  options.package = [package]
 
-def isPackageSrc(spath):
-    return os.path.exists(os.path.join(spath, "package.xml"))
+  result = main(options);
+  if result != 0:
+    errors.append(result)
+  
+  # Add the package to a workspace if necessary.
+  elif options.eclipse_workspace:
+      workspace = os.path.abspath(options.eclipse_workspace)
+      print "-- Trying to add the package to the eclipse workspace at: {0}".format(workspace)
+      print "-- Checking if eclipse is running"
+      if check_ps_cmd('eclipse'):
+          error('-- ERROR: Unable to add a package to a workspace if eclipse is running')
+          errors.append(2)
+          continue
+      if not os.path.exists(workspace):
+          error("-- ERROR: The workspace path does not exist")
+          errors.append(2)
+          continue
+      cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project_output_dir)
+      print cmd
+      status = subprocess.call(cmd, shell=True)
+      if status != 0:
+          error('-- ERROR Eclipse returned an error. This may not have worked.');
+          errors.append(2)
+          continue
+      okay('-- Successfully added {0} to the workspace at {1}'.format(package, workspace))
 
-# Initialize with a good guess. This helps find 
-# pure cmake packages that are not found by the method below.
-workspace = Workspace(catkin_workspaces[0])
-src = os.path.join(workspace.getSourceFolder(), package)
-
-class PackageCollector:
-    def __init__(self):
-        self.cnt = 0
-        self.src = None
-        self.workspace = None
-
-    def processPackage(self, s):
-        if options.verbose : print(colored("Testing package candidate in folder '%s'." % s, 'yellow'));
-        if isPackageSrc(s):
-            p = parse_package(s);
-            if options.verbose : print(colored("Found package named '%s'." % p.name, 'yellow'));
-            if(p.name == package):
-                if self.cnt==0:
-                    self.workspace = Workspace(ws)
-                    self.src = s
-                    print colored('-- Found {0} in workspace {1} with source {2}'.format(package, ws, s), 'green')
-                elif self.workspace._develspace != ws or self.src != s:
-                    print colored('-- Package ambiguous also in workspace {0} with source {1}'.format(ws, s), 'red')
-                self.cnt+=1
-        else:
-            if options.verbose : print(colored("Is no package.", 'yellow'));
-
-if foundCatkinPkg:
-    pkgCollector = PackageCollector()
-    for ws in catkin_workspaces:
-        if options.verbose : print(colored("Searching workspace '%s'." % ws, 'yellow'));
-        for s in catkin.workspace.get_source_paths(ws): # this can yield actual workspace source paths or packages depending on the catkin methods used
-            
-            if isPackageSrc(s): 
-                pkgCollector.processPackage(s)
-            else:
-                if options.verbose : print(colored("Digging into source path '%s'." % s, 'yellow'));
-                for p in find_packages(s):
-                    pkgCollector.processPackage(os.path.join(s, p))
-    
-    if pkgCollector.src:
-        src = pkgCollector.src
-        workspace = pkgCollector.workspace
-
-if not src or not isPackageSrc(src) :
-    print colored('-- Could not find package {0}. Aborting.'.format(package), 'red')
-    exit(-2)
-    
-print colored('--> Found {0}'.format(src), 'green')
-print
-
-if options.outputInSource :
-    if options.verbose : print(colored("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir, 'yellow'));
-    if options.projectOutputDir == defaultOutputDir:
-        options.projectOutputDir = outputInSourceOutputDir
-    else:
-        if options.verbose : print(colored("Output directory already set to %s" %options.projectOutputDir, 'yellow'))
-    options.define.append('IN_SOURCE=1');
-
-eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
-
-if not os.path.exists(eclipse_project_output_dir):
-    import eclipsify_lib.tools
-    eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
-
-options.srcDir = (src,)
-options.outDir = (eclipse_project_output_dir,)
-options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
-main(options);
-
-# Add the package to a workspace if necessary.
-if options.eclipse_workspace:
-    workspace = os.path.abspath(options.eclipse_workspace)
-    print "-- Trying to add the package to the eclipse workspace at: {0}".format(workspace)
-    print "-- Checking if eclipse is running"
-    if check_ps_cmd('eclipse'):
-        print colored('-- ERROR: Unable to add a package to a workspace if eclipse is running','red')
-        exit(2)
-    if not os.path.exists(workspace):
-        print colored("-- ERROR: The workspace path does not exist",'red')
-        exit(2)
-    cmd = 'eclipse -nosplash -data {0} -application org.eclipse.cdt.managedbuilder.core.headlessbuild -import {1}'.format(workspace, eclipse_project_output_dir)
-    print cmd
-    status = subprocess.call(cmd, shell=True)
-    if status != 0:
-        print colored('-- ERROR Eclipse returned an error. This may not have worked.','red');
-        exit(2)
-    print colored('-- Successfully added {0} to the workspace at {1}'.format(package, workspace), 'green')
+if errors:
+  exit(max(errors))
