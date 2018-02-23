@@ -1,10 +1,14 @@
 # Eclipsify
 Create eclipse projects from catkin projects. This is a very simple template-based generator. Currently it works at least for OSX, Ubuntu 14.04, and Ubuntu 16.04.
-If you'd like to enjoy the colorful output of catkin on the eclipse console have a look at the  [ansi-escape-console plugin](https://marketplace.eclipse.org/content/ansi-escape-console) .
+
 
 ### Requirements
 * [Eclipse CDT](https://www.eclipse.org/cdt/)
 * [catkin tools](https://catkin-tools.readthedocs.io/)
+
+### Recommended optional Eclipse plugins
+* To enjoy the colorful output of catkin on the Eclipse console: [ansi-escape-console plugin](https://marketplace.eclipse.org/content/ansi-escape-console)
+* To use git from within Eclipse: [EGit](http://www.eclipse.org/egit/)
 
 ### Installation
 - Clone the **eclipsify** repository into your catkin workspace

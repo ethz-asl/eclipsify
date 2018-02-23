@@ -11,7 +11,6 @@ def addCommonArguments(parser):
     parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
     parser.add_argument('-D', '--define', action='append', metavar="DEFINE[=VALUE]", help="Add cpp (c pre-processor) definitions.", default=[])
     parser.add_argument("--platform", help="Platform (defaults to sys.platform).", default=sys.platform)
-    parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
 def main(options = None):
     if not options:
@@ -25,9 +24,11 @@ def main(options = None):
         parser.add_argument("srcDir", nargs=1, help="The source directory.")
         parser.add_argument("outDir", nargs=1, help="The output directory. Where to put the eclipse project.")
         parser.add_argument("buildDir", nargs=1, help="This project's build directory.")
+        parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
         options = parser.parse_args(sys.argv)
 
+    tools.setVerbose(options.verbose)
     platform = options.platform
     outputDir = options.outDir[0]
     package = options.package[0]
@@ -80,4 +81,6 @@ def main(options = None):
     config = EclipsifyConfig();
     if precondition.fullfilled(config):
         #TODO(HannesSommer) use config object also for generator input
-        projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite=options.force);
+        return projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite=options.force);
+    else:
+        return 3

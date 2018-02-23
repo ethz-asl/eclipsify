@@ -45,3 +45,16 @@ def addModuleSaearchDirsAndCleanFromDanglingPycFiles(directories):
                     print ("Removing dangling '%s'." % pycFile)
                     os.remove(pycFile); 
             sys.path.insert(0, d)
+
+_verbose = False
+def setVerbose(verbose):
+    _verbose = verbose
+
+def verbose(text):
+    if _verbose : print (colored(text, 'yellow'))
+
+def error(text):
+    print (colored(text, 'red'))
+
+def okay(text):
+    print (colored(text, 'green'))
