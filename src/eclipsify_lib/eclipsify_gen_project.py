@@ -27,8 +27,8 @@ def main(options = None):
         parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
         options = parser.parse_args(sys.argv)
+        tools.setVerbose(options.verbose)
 
-    tools.setVerbose(options.verbose)
     platform = options.platform
     outputDir = options.outDir[0]
     package = options.package[0]
