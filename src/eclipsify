@@ -24,13 +24,13 @@ def check_ps_cmd(script_name):
 
 defaultOutputDir = "{devel}/share/{package}/eclipse"
 
-usage="""
+usage = """
 This utility creates a new eclipse project. It assumes the package is
 in a workspace with the default names for the devel/build/src spaces.
 If your workspace is different, try eclipsify-gen-project. If the
 command is called with the optional -w option, pointing to an existing
-eclipse workspace, the project is added to the eclipse workspace. You 
-must not have this workspace open in eclipse when you use -w. 
+eclipse workspace, the project is added to the eclipse workspace. You
+must not have this workspace open in eclipse when you use -w.
 Unfortunately this can be slow; see below.
 
 The project files will go to %s/ unless -s or -O are used.""" % defaultOutputDir
@@ -41,8 +41,8 @@ addCommonArguments(parser)
 outputInSourceOutputDir = '{src}'
 
 parser.add_argument('-w', dest='eclipse_workspace', help="""The path to the eclipse workspace that this package should be added to.
-WARNING: This is going to be very slow in some situations 
-(see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information). 
+WARNING: This is going to be very slow in some situations
+(see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information).
 As an alternative consider "File -> Import -> Existing Projects into Workspace" from within eclipse. There you can even import multiple projects at once.""")
 parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
 parser.add_argument('-O', dest='projectOutputDir', default=defaultOutputDir, help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
@@ -66,10 +66,10 @@ if options.catkin_workspace:
     import os.path;
     catkin_workspaces = [options.catkin_workspace];
     if not useRelativeLocations:
-        catkin_workspaces = [os.path.abspath(ws) for ws in catkin_workspaces]; 
+        catkin_workspaces = [os.path.abspath(ws) for ws in catkin_workspaces];
 else:
     catkin_workspaces = catkin.workspace.get_workspaces()
-    
+
 
 if len(catkin_workspaces) == 0:
     error('No workspaces! Please source the setup.bash file of some workspace before running this script.');
@@ -83,7 +83,7 @@ for package in packages:
   src = None
   workspace = None
 
-  # Initialize with a good guess. This helps find 
+  # Initialize with a good guess. This helps find
   # pure cmake packages that are not found by the method below.
   workspace = Workspace(catkin_workspaces[0])
   src = os.path.join(workspace.getSourceFolder(), package)
@@ -93,48 +93,48 @@ for package in packages:
       for ws in catkin_workspaces:
           verbose("Searching workspace '%s'." % ws);
           for s in catkin.workspace.get_source_paths(ws): # this can yield actual workspace source paths or packages depending on the catkin methods used
-              
-              if isPackageSrc(s): 
+
+              if isPackageSrc(s):
                   pkgCollector.processPackage(s, ws)
               else:
                   verbose("Digging into source path '%s'." % s);
                   for p in find_packages(s):
                       pkgCollector.processPackage(os.path.join(s, p), ws)
-      
+
       if pkgCollector.src:
           src = pkgCollector.src
           workspace = pkgCollector.workspace
-  
+
   if not src or not isPackageSrc(src) :
       error('-- Could not find package {0}. Aborting.'.format(package))
       errors.append(1)
       continue
-      
+
   okay("--> Found {0}\n".format(src))
-  
+
   if options.outputInSource :
       verbose("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir);
       if options.projectOutputDir == defaultOutputDir:
           options.projectOutputDir = outputInSourceOutputDir
       else:
-          verbose("Output directory already set to %s" %options.projectOutputDir)
+          verbose("Output directory already set to %s" % options.projectOutputDir)
       options.define.append('IN_SOURCE=1');
-  
-  eclipse_project_output_dir = options.projectOutputDir.format(devel = workspace.getDevelSpace(), package = package, src = src).replace('/', os.path.sep)
-  
+
+  eclipse_project_output_dir = options.projectOutputDir.format(devel=workspace.getDevelSpace(), package=package, src=src).replace('/', os.path.sep)
+
   if not os.path.exists(eclipse_project_output_dir):
       import eclipsify_lib.tools
-      eclipsify_lib.tools.mkdir_p( eclipse_project_output_dir )
-  
+      eclipsify_lib.tools.mkdir_p(eclipse_project_output_dir)
+
   options.srcDir = (src,)
   options.outDir = (eclipse_project_output_dir,)
-  options.buildDir = (os.path.join(workspace.getBuildSpace(), package), )
+  options.buildDir = (os.path.join(workspace.getBuildSpace(), package),)
   options.package = [package]
 
   result = main(options);
   if result != 0:
     errors.append(result)
-  
+
   # Add the package to a workspace if necessary.
   elif options.eclipse_workspace:
       workspace = os.path.abspath(options.eclipse_workspace)
