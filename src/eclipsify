@@ -13,7 +13,7 @@ if not os.environ.has_key('COLUMNS'):
     except:
         pass
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import subprocess
 
 def check_ps_cmd(script_name):
@@ -35,7 +35,7 @@ Unfortunately this can be slow; see below.
 
 The project files will go to %s/ unless -s or -O are used.""" % defaultOutputDir
 
-parser = ArgumentParser(description=usage)
+parser = ArgumentParser(description=usage, formatter_class=ArgumentDefaultsHelpFormatter)
 addCommonArguments(parser)
 
 outputInSourceOutputDir = '{src}'

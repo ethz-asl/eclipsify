@@ -3,14 +3,24 @@ import sys
 import os
 import tools
 import generator as generator
-from argparse import ArgumentParser, RawDescriptionHelpFormatter
+from argparse import ArgumentParser, RawDescriptionHelpFormatter, ArgumentDefaultsHelpFormatter
+
+DefaultPlatform = sys.platform
+LibDir = os.path.dirname(__file__);
+TemplatesDir = os.path.join(LibDir, 'templates');
+UserTemplatesDir = os.path.expanduser("~/.eclipsify/templates");
+
+def getDefaultTemplatePaths(platform):
+    platformTemplateDir = os.path.join(TemplatesDir, platform)
+    userPlatformTemplatesDir = os.path.join(UserTemplatesDir, platform)
+    return [userPlatformTemplatesDir, UserTemplatesDir, platformTemplateDir, TemplatesDir]
 
 def addCommonArguments(parser):
     parser.add_argument('-v', '--verbose', action='count', help="Verbosity level.", default=0)
     parser.add_argument("-f", "--force", action='count', help="Force overwriting existing files.", default=False)
-    parser.add_argument('-T', '--templates', help="Templates search path prefix; colon separated.", default="")
+    parser.add_argument('-T', '--templates', help="Templates search path prefixes; colon separated. If beginning with '=' the default template paths are not implicitly appended.", default=":".join(getDefaultTemplatePaths(DefaultPlatform)))
     parser.add_argument('-D', '--define', action='append', metavar="DEFINE[=VALUE]", help="Add cpp (c pre-processor) definitions.", default=[])
-    parser.add_argument("--platform", help="Platform (defaults to sys.platform).", default=sys.platform)
+    parser.add_argument("--platform", help="Platform.", default=DefaultPlatform)
 
 def main(options = None):
     if not options:
@@ -18,7 +28,7 @@ def main(options = None):
 
         This utility creates a new eclipse project."""
 
-        parser = ArgumentParser(description=usage,formatter_class=RawDescriptionHelpFormatter)
+        parser = ArgumentParser(description=usage, formatter_class=ArgumentDefaultsHelpFormatter)
         addCommonArguments(parser)
 
         parser.add_argument("srcDir", nargs=1, help="The source directory.")
@@ -44,25 +54,20 @@ def main(options = None):
 
     print("----------")
 
-    libDir = os.path.dirname(__file__);
-    sys.path.insert(0, libDir)
-
-    templatesDir = os.path.join(libDir, 'templates');
-    platformTemplateDir = os.path.join(templatesDir, platform);
-    userTemplatesDir = os.path.expanduser("~/.eclipsify/templates");
-    userPlatformTemplatesDir = os.path.join(userTemplatesDir, platform);
-
     extendWithDefaultTemplatePaths = True
     if options.templates.startswith('='):
         extendWithDefaultTemplatePaths = False
         options.templates = options.templates[1:]
     templateSearchPaths = options.templates.split(':')
     if extendWithDefaultTemplatePaths:
-        templateSearchPaths.extend([userPlatformTemplatesDir, userTemplatesDir, platformTemplateDir, templatesDir]);
+        templateSearchPaths.extend(getDefaultTemplatePaths(platform));
 
     # get rid of empty template search paths
     templateSearchPaths = [ p for p in templateSearchPaths if (p) ]
 
+    sys.path.insert(0, LibDir)
+    for t in reversed(templateSearchPaths):
+        sys.path.insert(0, t)
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
 
     import projectFiles
