@@ -14,16 +14,16 @@ class EclipsifyAcceptance(unittest.TestCase):
         for project in projects:
             outDir = 'expected/%s/%s/%s' % (testWorkspace if not inSource else os.path.join(os.path.dirname(testWorkspace), "src"), platform, project)
             subprocess.call(['rm', '-rf', outDir])
-            subprocess.call([sys.executable, 
-                             '../src/eclipsify', '-v', 
+            subprocess.call([sys.executable,
+                             '../src/eclipsify', '-v',
                              '-s' if inSource else '-v',
-                             '-W', testWorkspace, 
-                             '-O', outDir, 
-                             '--platform', platform, 
-                             '-T', '=../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform, 
+                             '-W', testWorkspace,
+                             '-O', outDir,
+                             '--platform', platform,
+                             '-T', '=../src/eclipsify_lib/templates/%s:../src/eclipsify_lib/templates' % platform,
                              project]
                             )
-            #TODO(HannesSommer): write eclipsify output also to file and make it join the expected output! 
+            #TODO(HannesSommer): write eclipsify output also to file and make it join the expected output!
             pipe = os.popen('git diff '+ outDir + ' 2>&1')
             c = 0
             for l in pipe:

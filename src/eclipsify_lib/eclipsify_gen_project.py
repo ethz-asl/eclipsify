@@ -22,9 +22,9 @@ def addCommonArguments(parser):
     parser.add_argument('-D', '--define', action='append', metavar="DEFINE[=VALUE]", help="Add cpp (c pre-processor) definitions.", default=[])
     parser.add_argument("--platform", help="Platform.", default=DefaultPlatform)
 
-def main(options = None):
+def main(options=None):
     if not options:
-        usage="""
+        usage = """
 
         This utility creates a new eclipse project."""
 
@@ -50,7 +50,7 @@ def main(options = None):
         for opt in options.define:
             print("\t\t" + opt);
             parts = opt.split('=', 2);
-            cppMacroDict[parts[0]] =  parts[1] if len(parts) > 1 else '1'
+            cppMacroDict[parts[0]] = parts[1] if len(parts) > 1 else '1'
 
     print("----------")
 
@@ -71,11 +71,12 @@ def main(options = None):
     tools.addModuleSaearchDirsAndCleanFromDanglingPycFiles(templateSearchPaths);
 
     import projectFiles
-    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0], cppMacros = cppMacroDict)
+    projectFilesGenerator = generator.ProjectFilesGenerator(options.verbose, package, options.srcDir[0], options.buildDir[0], cppMacros=cppMacroDict)
 
     import precondition
 
     class EclipsifyConfig():
+
         def __init__(self):
             self.platform = platform;
             self.package = package
@@ -85,7 +86,7 @@ def main(options = None):
 
     config = EclipsifyConfig();
     if precondition.fullfilled(config):
-        #TODO(HannesSommer) use config object also for generator input
+        # TODO(HannesSommer) use config object also for generator input
         return projectFilesGenerator.generate(templateSearchPaths, projectFiles.files, outputDir, forceOverwrite=options.force);
     else:
         return 3
