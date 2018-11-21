@@ -26,12 +26,15 @@ class EclipsifyAcceptance(unittest.TestCase):
                              project]
                             )
             # TODO(HannesSommer): write eclipsify output also to file and make it join the expected output!
-            pipe = os.popen('git diff ' + outDir + ' 2>&1')
             c = 0
-            for l in pipe:
-                print(l.strip())
-                c += 1
-            self.assertEqual(c, 0, "There should be no difference between HEAD and the expected output! Either fix the code or commit changed expected output.")
+            for cmd in ('git diff -- ' + outDir, 'git ls-files --others --exclude-standard -- ' + outDir):
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                stdout = p.stdout.read()
+                stderr = p.stderr.read()
+                p.wait()
+                self.assertEqual(p.returncode, 0, "The command '%s' failed with exit code %s." % (cmd, p.returncode))
+                self.assertEqual(len(stderr), 0, "The command '%s' had error output:\n%s" % (cmd, stderr))
+                self.assertEqual(len(stdout), 0, "There should be no difference between HEAD and the expected output! Either fix the code or commit changed expected output. Output of '%s' was:\n%s" % (cmd, stdout))
 
     def testLinux(self):
         self._testGeneratorGeneratesSame('linux2')
