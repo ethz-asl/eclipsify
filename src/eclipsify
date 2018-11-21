@@ -45,7 +45,7 @@ parser.add_argument('-w', dest='eclipse_workspace', help="""The path to the ecli
 WARNING: This is going to be very slow in some situations
 (see 'https://github.com/ethz-asl/eclipsify/issues/8' for more information).
 As an alternative consider "File -> Import -> Existing Projects into Workspace" from within eclipse. There you can even import multiple projects at once.""")
-parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
+parser.add_argument('-s', dest='outputInSource', action='count', default=False, help='Will enforce in-source writing of the project files. Equivalent to "-O \'%s\' -D IN_SOURCE=1". An additionally provided "-O" will take precedence.' % outputInSourceOutputDir)
 parser.add_argument('-O', dest='projectOutputDir', default=defaultOutputDir, help='The path to the folder in which the eclipse project files should be created. The substrings {devel}, {package} and {src} will be replaced appropriately.')
 parser.add_argument('-W,--catkin-ws', dest='catkin_workspace', help='The path to the catkin workspace that this package should be. It must point to the workspace\'s devel space! Default is to use the current catkin workspace layers ("sourced").')
 parser.add_argument("packages", nargs="+", help="The names of the catkin packages to be eclipsified.")
@@ -92,7 +92,7 @@ for package in packages:
       pkgCollector = PackageCollector(package)
       for ws in catkin_workspaces:
           verbose("Searching workspace '%s'." % ws);
-          for s in catkin.workspace.get_source_paths(ws): # this can yield actual workspace source paths or packages depending on the catkin methods used
+          for s in catkin.workspace.get_source_paths(ws):  # this can yield actual workspace source paths or packages depending on the catkin methods used
 
               if isPackageSrc(s):
                   pkgCollector.processPackage(s, ws)
@@ -113,7 +113,7 @@ for package in packages:
   okay("--> Found {0}\n".format(src))
 
   if options.outputInSource :
-      verbose("In source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir);
+      verbose("In-source output is active. Overwriting output directory with '%s'." % outputInSourceOutputDir);
       if options.projectOutputDir == defaultOutputDir:
           options.projectOutputDir = outputInSourceOutputDir
       else:
