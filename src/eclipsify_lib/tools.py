@@ -47,11 +47,14 @@ def addModuleSaearchDirsAndCleanFromDanglingPycFiles(directories):
                     os.remove(pycFile);
             sys.path.insert(0, d)
 
-_verbose = False
+_verbose = 0
+
 def setVerbose(verbose):
+    global _verbose
     _verbose = verbose
 
 def verbose(text):
+    global _verbose
     if _verbose : print(colored(text, 'yellow'))
 
 def error(text):
