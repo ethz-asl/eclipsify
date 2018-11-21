@@ -34,7 +34,7 @@ class EclipsifyAcceptance(unittest.TestCase):
                 p.wait()
                 self.assertEqual(p.returncode, 0, "The command '%s' failed with exit code %s." % (cmd, p.returncode))
                 self.assertEqual(len(stderr), 0, "The command '%s' had error output:\n%s" % (cmd, stderr))
-                self.assertEqual(len(stdout), 0, "There should be no difference between HEAD and the expected output! Either fix the code or commit changed expected output. Output of '%s' was:\n%s" % (cmd, stdout))
+                self.assertEqual(len(stdout), 0, "There should be no difference between HEAD and the generated output! Either fix the code or commit changed expected output. Output of '%s' was:\n%s" % (cmd, stdout))
 
     def testLinux(self):
         self._testGeneratorGeneratesSame('linux2')
