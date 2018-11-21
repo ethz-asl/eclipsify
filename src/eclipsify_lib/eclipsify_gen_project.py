@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import os
 import tools
+from tools import verbose, okay, error
 import generator as generator
 from argparse import ArgumentParser, RawDescriptionHelpFormatter, ArgumentDefaultsHelpFormatter
 
@@ -37,22 +38,21 @@ def main(options=None):
         parser.add_argument("package", nargs=1, help="The name of the catkin package to be eclipsified.")
 
         options = parser.parse_args(sys.argv)
-        tools.setVerbose(options.verbose)
+
+    tools.setVerbose(options.verbose)
 
     platform = options.platform
     outputDir = options.outDir[0]
     package = options.package[0]
 
     cppMacroDict = dict()
-    print("eclipsify package %s for platform %s" % (package, platform))
+    verbose("eclipsify package %s for platform %s" % (package, platform))
     if len(options.define) :
-        print("\tactive cpp macros / defines :");
+        verbose("\tactive cpp macros / defines :");
         for opt in options.define:
-            print("\t\t" + opt);
+            verbose("\t\t" + opt);
             parts = opt.split('=', 2);
             cppMacroDict[parts[0]] = parts[1] if len(parts) > 1 else '1'
-
-    print("----------")
 
     extendWithDefaultTemplatePaths = True
     if options.templates.startswith('='):
@@ -64,6 +64,9 @@ def main(options=None):
 
     # get rid of empty template search paths
     templateSearchPaths = [ p for p in templateSearchPaths if (p) ]
+
+    verbose("Using these template search paths: %s" % templateSearchPaths)
+    verbose("----------")
 
     sys.path.insert(0, LibDir)
     for t in reversed(templateSearchPaths):
