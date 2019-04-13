@@ -75,6 +75,10 @@ optional arguments:
                         workspace layers ("sourced").
 ```
 
+### Further reading
+* [Tutorial on debugging ROS applications with eclipse](https://github.com/jrgnicho/ros_development_config/blob/xenial/gdb/README.md)
+
+
 ### Examples
 In order to create eclipse project files for a ros package called **my_pkg** that lives in a 
 catkin do the following:
