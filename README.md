@@ -80,7 +80,9 @@ optional arguments:
 
 
 ### Examples
-In order to create eclipse project files for a ros package called **my_pkg** that lives in a 
+
+#### Single ROS packages
+In order to create eclipse project files for a single ros package called **my_pkg** that lives in a 
 catkin do the following:
 
 - `cd` into the top level directory of your **catkin workspace**
@@ -92,14 +94,14 @@ catkin do the following:
       ```
       The generated project files go into **\<catkin workspace>/devel/share/my_pkg/eclipse/** and the my_pkg source folder gets linked into the project.
 
-  2. Other separate project files folder (e.g. `project`):
+  2. Other separate project files folder (e.g. `projects`):
 
       This options is useful if you'd like to keep IDE project files outside of your tracked repository directories and the catkin devel-space.
       ```
-      eclipsify my_pkg -O project/my_pkg
+      eclipsify my_pkg -O projects/my_pkg
       ```
 
-      This will create the eclipse project files in the **\<catkin workspace>/project/my_pkg** and also link it to my_pkg source folder.
+      This will create the eclipse project files in the **\<catkin workspace>/projects/my_pkg** and also link it to my_pkg source folder.
 
   3. In-source option (required by **EGit**):
       ```
@@ -121,12 +123,34 @@ catkin do the following:
       ## TeXlipse
       .texlipse
       ```
+
+#### Multiple Packages
+The _eclipsify_ command can be used in conbitation with the catkin command to easily generate project files for all the ROS packages that  
+reside in a workspace. The options are as follows:
+
+  1. Create project files in the catkin worspace devel directory:
+    ```
+    catkin list -u | xargs -I pkg bash -c "eclipsify pkg"
+    ```
+    As in the single package example, the eclipse project files will be stored in a subdirectory in the **\<catkin workspace>/devel/share/..**  
+    directory.
+
+  2. Create project files in a separate __projects__ directory:
+    Run the following command from the root directory of your catkin workspace
+    ```
+    catkin list -u | xargs -I pkg bash -c "eclipsify pkg -O projects/pkg"
+    ```
+    This will create the eclipse project files for each package in separate subdirectories in the **\<catkin workspace>/projects/** directory.
+
+
 - **Import** into an Eclipse workspace through one of the following alternatives:
 
   1. Import the project by browsing to the project files directory just created from the **Import** window in eclipse.
   Make sure to select the "Existing Project into Workspace" option under the "General" category
   shown in the **Import** window.
   
-  2. **EGit** option (assuming my_pkg being under git version control):
+  2. In the next window, check the boxes for all the packages you wish to import and then click **Finish**
+  
+  3. **EGit** option (assuming my_pkg being under git version control):
       - **Add** the my_pkg source folder as git repository to the Eclipse workspace using EGit
       - Right click on the repository and select **Improt Projects...**
