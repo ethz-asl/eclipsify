@@ -76,7 +76,7 @@ optional arguments:
 ```
 
 ### Further reading
-* [Tutorial on debugging ROS applications with eclipse](https://github.com/jrgnicho/ros_development_config/blob/xenial/gdb/README.md)
+* [Tutorial on debugging ROS applications with eclipse](https://github.com/jrgnicho/ros_development_config/blob/master/gdb/README.md)
 
 
 ### Examples
